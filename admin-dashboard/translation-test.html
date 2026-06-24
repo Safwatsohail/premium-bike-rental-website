@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Test</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    <link rel="stylesheet" href="css/translation-test.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body data-page-title="dashboard.title">
+    <div class="container translation-test-container">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome to First Season Moto</p>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>123</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>45</h3>
+                    <p>Total Bikes</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>89</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="translation-test-buttons">
+            <button onclick="testTranslation()" class="btn btn-primary">Test Translation</button>
+            <button onclick="switchToArabic()" class="btn btn-secondary">Switch to Arabic</button>
+            <button onclick="switchToEnglish()" class="btn btn-secondary">Switch to English</button>
+        </div>
+        
+        <div id="log" class="translation-test-log"></div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/translation.js"></script>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        async function testTranslation() {
+            log('🧪 Testing translation system...');
+            
+            if (window.translationManager) {
+                log('✅ Translation manager loaded');
+                log(`📊 Current language: ${window.translationManager.getCurrentLanguage()}`);
+                log(`🌍 Available languages: ${Object.keys(window.translationManager.translations).join(', ')}`);
+                
+                // Test translation
+                const testKey = 'dashboard.totalUsers';
+                const enTranslation = window.translationManager.t(testKey);
+                log(`🔤 Translation test: "${testKey}" -> "${enTranslation}"`);
+                
+                // Test Arabic
+                window.translationManager.currentLang = 'ar';
+                const arTranslation = window.translationManager.t(testKey);
+                log(`🔤 Arabic translation: "${testKey}" -> "${arTranslation}"`);
+                
+                // Reset language
+                window.translationManager.currentLang = 'en';
+                
+            } else {
+                log('❌ Translation manager not loaded');
+            }
+        }
+        
+        async function switchToArabic() {
+            log('🔄 Switching to Arabic...');
+            if (window.translationManager) {
+                await window.translationManager.setLanguage('ar');
+                log('✅ Switched to Arabic');
+            } else {
+                log('❌ Translation manager not available');
+            }
+        }
+        
+        async function switchToEnglish() {
+            log('🔄 Switching to English...');
+            if (window.translationManager) {
+                await window.translationManager.setLanguage('en');
+                log('✅ Switched to English');
+            } else {
+                log('❌ Translation manager not available');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('🚀 Page loaded, initializing translation system...');
+            
+            // Wait for Firebase to initialize
+            if (window.firebase) {
+                log('✅ Firebase loaded');
+            } else {
+                log('❌ Firebase not loaded');
+            }
+            
+            // Initialize translation manager
+            if (window.translationManager) {
+                await window.translationManager.init();
+                log('✅ Translation system initialized');
+                log(`📊 Current language: ${window.translationManager.getCurrentLanguage()}`);
+            } else {
+                log('❌ Translation manager not found');
+            }
+        });
+    </script>
+</body>
+</html>

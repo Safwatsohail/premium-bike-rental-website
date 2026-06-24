@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Bookings - BikeRent Pro Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bookings.css">
+    <link rel="stylesheet" href="css/responsive-utilities.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <!-- Fast Firebase Init - Prefetch data immediately -->
+    <script src="js/firebase-init.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="First Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="main_admin.html"><i class="fas fa-home"></i> <span
+                               >Dashboard</span></a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> <span
+                               >Users</span></a></li>
+                    <li><a href="bikes.html"><i class="fas fa-bicycle"></i> <span
+                               >Bikes</span></a></li>
+                    <li class="active"><a href="bookings.html"><i class="fas fa-calendar-alt"></i> <span
+                               >Bookings</span></a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-line"></i> <span
+                               >Analytics</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span
+                               >Settings</span></a></li>
+                    <li><a href="accessories.html"><i class="fas fa-toolbox"></i> <span
+                               >Accessories</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar glass">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchBookings" placeholder="Search bookings..."
+                       >
+                </div>
+                <div class="user-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile">
+                        <img src="https://picsum.photos/seed/admin/40/40" alt="Admin">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="bookings-content">
+                <div class="page-header">
+                    <h1>Bookings</h1>
+                    <div class="header-actions">
+                        <div class="filter-dropdown">
+                            <button class="btn btn-secondary" onclick="toggleFilterDropdown()">
+                                <i class="fas fa-filter"></i> <span>Filter</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="filterDropdown" class="filter-menu glass">
+                                <div class="filter-group">
+                                    <label>Status</label>
+                                    <select id="statusFilter" class="glass-select" title="Filter by booking status"
+                                       >
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label>Date Range</label>
+                                    <input type="date" id="startDate" class="glass-input" placeholder="Start date"
+                                        title="Filter start date"
+                                       >
+                                    <input type="date" id="endDate" class="glass-input" placeholder="End date"
+                                        title="Filter end date">
+                                </div>
+                                <button class="btn btn-primary" onclick="applyFilters()">
+                                    <i class="fas fa-check"></i> <span
+                                       >Apply</span>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="exportBookings()">
+                            <i class="fas fa-download"></i> <span>Export</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card glass">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalBookings">0</h3>
+                            <p>Total Bookings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-icon">
+                            <i class="fas fa-motorcycle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeBookings">0</h3>
+                            <p>Active Rentals</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="todayRevenue">AED 0</h3>
+                            <p>Today's Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgRating">0.0</h3>
+                            <p>Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings Grid -->
+                <div class="bookings-grid" id="bookingsGrid">
+                    <!-- Booking cards will be dynamically generated here -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn btn-secondary" onclick="previousPage()" id="prevBtn" title="Previous page">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="page-info">
+                        <span>Page</span> <span id="currentPage">1</span> <span
+                           >of</span> <span id="totalPages">3</span>
+                    </span>
+                    <button class="btn btn-secondary" onclick="nextPage()" id="nextBtn" title="Next page">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="modal glass">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Booking Details</h2>
+                <button class="close-btn" onclick="closeBookingModal()" title="Close booking details modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="bookingModalBody">
+                <!-- Booking details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeBookingModal()">
+                    <i class="fas fa-times"></i> <span>Close</span>
+                </button>
+                <button class="btn btn-primary" onclick="printBooking()">
+                    <i class="fas fa-print"></i> <span>Print</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/session-manager.js"></script>
+    <script src="js/translation.js"></script>
+    <script src="js/bookings.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Show mobile menu toggle on small screens
+        function handleResize() {
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (window.innerWidth <= 768) {
+                toggle.style.display = 'block';
+            } else {
+                toggle.style.display = 'none';
+                document.querySelector('.sidebar').classList.remove('active');
+                document.querySelector('.sidebar-overlay').classList.remove('active');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('load', handleResize);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Pricing Tiers - Four Season Moto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .bike-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .price-item {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .price-title {
+            color: #FF0033;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .price-value {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+        .test-btn {
+            background: #FF0033;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-btn:hover {
+            background: #CC0029;
+        }
+        .log {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-cogs"></i> Pricing Tiers Test Page</h1>
+        <p>This page tests the new pricing tiers functionality for bikes.</p>
+
+        <div class="test-controls">
+            <button class="test-btn" onclick="loadBikes()">
+                <i class="fas fa-download"></i> Load Bikes from Firebase
+            </button>
+            <button class="test-btn" onclick="testDurationSelection()">
+                <i class="fas fa-clock"></i> Test Duration Selection
+            </button>
+            <button class="test-btn" onclick="clearLog()">
+                <i class="fas fa-trash"></i> Clear Log
+            </button>
+        </div>
+
+        <div id="bikesContainer">
+            <p>Click "Load Bikes" to see bikes with pricing tiers...</p>
+        </div>
+
+        <div class="log" id="logContainer">
+            <strong>Test Log:</strong><br>
+            Ready to test pricing tiers...
+        </div>
+    </div>
+
+    <script>
+        let bikes = [];
+
+        function log(message) {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            logContainer.innerHTML += `<br>[${timestamp}] ${message}`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '<strong>Test Log:</strong><br>Log cleared...';
+        }
+
+        function waitForDB(callback) {
+            if (window.db) {
+                callback(window.db);
+            } else {
+                setTimeout(function() { waitForDB(callback); }, 50);
+            }
+        }
+
+        function loadBikes() {
+            log('Loading bikes from Firebase...');
+            const container = document.getElementById('bikesContainer');
+            container.innerHTML = '<p>Loading...</p>';
+
+            waitForDB(function(db) {
+                db.collection('bikes').get()
+                    .then(snapshot => {
+                        bikes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        log(`Loaded ${bikes.length} bikes from Firebase`);
+                        displayBikes();
+                    })
+                    .catch(error => {
+                        log(`Error loading bikes: ${error.message}`);
+                        container.innerHTML = '<p style="color: #ff0033;">Error loading bikes. Check console.</p>';
+                    });
+            });
+        }
+
+        function displayBikes() {
+            const container = document.getElementById('bikesContainer');
+            container.innerHTML = '';
+
+            if (bikes.length === 0) {
+                container.innerHTML = '<p>No bikes found. Add some bikes in the admin dashboard first.</p>';
+                return;
+            }
+
+            bikes.forEach(bike => {
+                const card = document.createElement('div');
+                card.className = 'bike-card';
+
+                // Check if bike has pricing tiers
+                const hasPricingTiers = bike.pricing && typeof bike.pricing === 'object';
+                
+                let pricingHtml = '';
+                if (hasPricingTiers) {
+                    pricingHtml = `
+                        <div class="pricing-grid">
+                            <div class="price-item">
+                                <div class="price-title">1 Day</div>
+                                <div class="price-value">AED ${bike.pricing.oneDay || 'N/A'}/day</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-title">3 Days</div>
+                                <div class="price-value">AED ${bike.pricing.threeDays || 'N/A'}/day</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-title">1 Week</div>
+                                <div class="price-value">AED ${bike.pricing.oneWeek || 'N/A'}/day</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-title">1 Month</div>
+                                <div class="price-value">AED ${bike.pricing.oneMonth || 'N/A'}/day</div>
+                            </div>
+                        </div>
+                    `;
+                    log(`✅ ${bike.name} has pricing tiers`);
+                } else {
+                    pricingHtml = `
+                        <div style="color: #ff9900; padding: 10px; background: #332200; border-radius: 5px;">
+                            ⚠️ Legacy pricing: AED ${bike.price}/day (no tiers)
+                        </div>
+                    `;
+                    log(`⚠️ ${bike.name} uses legacy pricing (no tiers)`);
+                }
+
+                card.innerHTML = `
+                    <h3><i class="fas fa-motorcycle"></i> ${bike.name}</h3>
+                    <p><strong>Type:</strong> ${bike.type} | <strong>Status:</strong> ${bike.status}</p>
+                    <p><strong>Base Price:</strong> AED ${bike.price}/day</p>
+                    ${pricingHtml}
+                    <button class="test-btn" onclick="testBikePricing('${bike.id}')">
+                        <i class="fas fa-calculator"></i> Test Pricing
+                    </button>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function testBikePricing(bikeId) {
+            const bike = bikes.find(b => b.id === bikeId);
+            if (!bike) {
+                log(`❌ Bike ${bikeId} not found`);
+                return;
+            }
+
+            log(`🧪 Testing pricing for ${bike.name}:`);
+            
+            if (bike.pricing) {
+                log(`  • 1 Day: AED ${bike.pricing.oneDay}/day`);
+                log(`  • 3 Days: AED ${bike.pricing.threeDays}/day (Total: AED ${(bike.pricing.threeDays * 3).toFixed(0)})`);
+                log(`  • 1 Week: AED ${bike.pricing.oneWeek}/day (Total: AED ${(bike.pricing.oneWeek * 7).toFixed(0)})`);
+                log(`  • 1 Month: AED ${bike.pricing.oneMonth}/day (Total: AED ${(bike.pricing.oneMonth * 30).toFixed(0)})`);
+                
+                // Calculate savings per day
+                const baseDaily = bike.pricing.oneDay;
+                const savings3Days = ((baseDaily - bike.pricing.threeDays) / baseDaily * 100).toFixed(1);
+                const savings1Week = ((baseDaily - bike.pricing.oneWeek) / baseDaily * 100).toFixed(1);
+                const savings1Month = ((baseDaily - bike.pricing.oneMonth) / baseDaily * 100).toFixed(1);
+                
+                log(`  💰 Per-day savings: 3 days (${savings3Days}%), 1 week (${savings1Week}%), 1 month (${savings1Month}%)`);
+            } else {
+                log(`  ⚠️ No pricing tiers - using legacy price: AED ${bike.price}/day`);
+            }
+        }
+
+        function testDurationSelection() {
+            log('🧪 Testing duration selection flow...');
+            
+            // Simulate selecting a bike and duration
+            if (bikes.length === 0) {
+                log('❌ No bikes loaded. Load bikes first.');
+                return;
+            }
+
+            const testBike = bikes[0];
+            const testDuration = {
+                duration: '1week',
+                pricing: {
+                    totalPrice: testBike.pricing ? (testBike.pricing.oneWeek * 7) : (testBike.price * 7),
+                    days: 7,
+                    pricePerDay: testBike.pricing ? testBike.pricing.oneWeek : testBike.price
+                }
+            };
+
+            // Store in localStorage like the real flow
+            localStorage.setItem('selectedBike', JSON.stringify(testBike));
+            localStorage.setItem('selectedDuration', JSON.stringify(testDuration));
+
+            log(`✅ Simulated selection: ${testBike.name} for 1 week`);
+            log(`  • Total: AED ${testDuration.pricing.totalPrice}`);
+            log(`  • Per day: AED ${testDuration.pricing.pricePerDay.toFixed(2)}`);
+            log(`  • Duration: ${testDuration.pricing.days} days`);
+            log('💾 Data stored in localStorage');
+        }
+
+        // Auto-load bikes when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded. Firebase initializing...');
+            setTimeout(loadBikes, 1000); // Give Firebase time to initialize
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+/* Responsive Utilities and Touch Enhancements */
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .btn {
+        min-height: 44px;
+        padding: 0.75rem 1.25rem;
+    }
+
+    .sidebar nav ul li a {
+        min-height: 48px;
+        padding: 0.85rem 1rem;
+    }
+}
+
+/* Prevent text selection on interactive elements */
+.btn,
+.sidebar nav ul li a,
+.mobile-menu-toggle,
+.close-modal,
+.close-btn {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch feedback */
+@media (hover: none) and (pointer: coarse) {
+    .btn:active,
+    .sidebar nav ul li a:active,
+    .mobile-menu-toggle:active {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+
+    .bike-card:active,
+    .booking-card:active,
+    .stat-card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Improved focus states for accessibility */
+*:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+/* Mobile-optimized scrollbars */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 0, 51, 0.5);
+        border-radius: 3px;
+    }
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Mobile-friendly tables */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 600px;
+    }
+}
+
+/* Loading states */
+.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--accent-blue);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Skeleton loading animation */
+.skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+
+    .sidebar {
+        padding-left: max(0px, env(safe-area-inset-left));
+    }
+
+    .top-bar {
+        padding-left: max(1.5rem, calc(1.5rem + env(safe-area-inset-left)));
+        padding-right: max(1.5rem, calc(1.5rem + env(safe-area-inset-right)));
+    }
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .logo {
+        padding: 1rem;
+    }
+
+    .logo-img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .sidebar nav ul {
+        padding: 0.75rem 0;
+    }
+
+    .sidebar nav ul li a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .modal-content {
+        max-height: 85vh;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .top-bar,
+    .mobile-menu-toggle,
+    .sidebar-overlay,
+    .btn,
+    .pagination {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .bike-card,
+    .booking-card,
+    .stat-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bike-card,
+    .booking-card,
+    .stat-card,
+    .modal-content {
+        border: 2px solid var(--text-primary);
+    }
+
+    .btn {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Dark mode enhancements (already dark, but for future) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
+
+/* Utility classes */
+.hide-mobile {
+    display: block;
+}
+
+.show-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+/* Flexbox utilities for responsive layouts */
+.flex-wrap-mobile {
+    display: flex;
+}
+
+@media (max-width: 768px) {
+    .flex-wrap-mobile {
+        flex-wrap: wrap;
+    }
+}
+
+.flex-column-mobile {
+    display: flex;
+}
+
+@media (max-width: 768px) {
+    .flex-column-mobile {
+        flex-direction: column;
+    }
+}
+
+/* Spacing utilities for mobile */
+@media (max-width: 768px) {
+    .mt-mobile-1 {
+        margin-top: 0.5rem;
+    }
+
+    .mt-mobile-2 {
+        margin-top: 1rem;
+    }
+
+    .mb-mobile-1 {
+        margin-bottom: 0.5rem;
+    }
+
+    .mb-mobile-2 {
+        margin-bottom: 1rem;
+    }
+
+    .p-mobile-1 {
+        padding: 0.5rem;
+    }
+
+    .p-mobile-2 {
+        padding: 1rem;
+    }
+}
+
+/* Text utilities */
+.text-center-mobile {
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .text-center-mobile {
+        text-align: center;
+    }
+}
+
+/* Grid auto-fit utility */
+.grid-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .grid-auto-fit {
+        grid-template-columns: 1fr;
+    }
+}

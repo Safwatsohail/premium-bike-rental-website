@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Duration - Four Season Moto | Off-Road Bike Rentals</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Choose your rental duration for off-road bikes, ATVs, and jet skis in Dubai. Flexible rental periods with competitive pricing.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#FF0033">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+    <script src="js/mobile-performance.js"></script>
+    <script src="js/mobile-buttery-smooth.js"></script>
+    <script src="js/pricing-validator.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background-color: #000000;
+            background-image:
+                radial-gradient(circle at center, transparent 10%, #000000 100%),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(90deg, #050505 5px, transparent 5px),
+                linear-gradient(#0a0a0a 25%, #030303 25%, #030303 50%, transparent 50%, transparent 75%, #0d0d0d 75%, #0d0d0d);
+            background-position: center center, 0 2.5px, 5px 0px, 0px 5px, 5px 2.5px, 0 0, 0 0;
+            background-size: 100% 100%, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px;
+            background-attachment: fixed, scroll, scroll, scroll, scroll, scroll, scroll;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid #FF0033;
+            color: #FF0033;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #FF0033;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.4);
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 45%, #FF0033 50%, transparent 55%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 4s infinite linear;
+            opacity: 0.5;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Selected Bike Info */
+        .selected-bike-info {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .bike-image {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #333;
+        }
+
+        .bike-details h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .bike-details p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Duration Options */
+        .duration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Custom Duration Section */
+        .custom-duration-section {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        }
+
+        .custom-duration-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: #FF0033;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .custom-input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .custom-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #333;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            width: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #FF0033;
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.3);
+        }
+
+        .custom-input-label {
+            color: #888;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .custom-calculate-btn {
+            background: #FF0033;
+            border: none;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-calculate-btn:hover {
+            background: #CC0029;
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
+        }
+
+        .custom-pricing-display {
+            background: rgba(255, 0, 51, 0.1);
+            border: 1px solid rgba(255, 0, 51, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .custom-pricing-display.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .custom-total-price {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #FF0033;
+            margin-bottom: 8px;
+        }
+
+        .custom-per-day {
+            color: #4CAF50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .custom-comparison {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .custom-select-btn {
+            background: transparent;
+            border: 2px solid #FF0033;
+            color: #FF0033;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-select-btn:hover {
+            background: #FF0033;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
+        }
+
+        .custom-select-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .duration-card {
+            background: rgba(10, 10, 10, 0.6);
+            border: 2px solid #222;
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .duration-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .duration-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .duration-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .duration-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .duration-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #FF0033;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 51, 0.2);
+        }
+
+        .duration-card.selected {
+            border-color: #FF0033;
+            background: rgba(255, 0, 51, 0.1);
+            box-shadow: 0 0 30px rgba(255, 0, 51, 0.3);
+        }
+
+        .duration-icon {
+            font-size: 3rem;
+            color: #FF0033;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .duration-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .duration-period {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .duration-price {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #FF0033;
+            margin-bottom: 10px;
+        }
+
+        .duration-savings {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 12px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .duration-per-day {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .duration-per-day strong {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Duration Status Messages */
+        .duration-status {
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .duration-status.optimal {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .duration-status.upgrade {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            cursor: pointer;
+        }
+
+        .duration-status.disabled {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        /* Disabled Cards */
+        .duration-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(50%);
+        }
+
+        .duration-card.disabled:hover {
+            transform: none;
+            border-color: #222;
+            box-shadow: none;
+        }
+
+        /* Rental Period Info */
+        /* Pricing Banner */
+        .pricing-banner {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        .banner-content i {
+            font-size: 1.3rem;
+            color: #FFD700;
+        }
+
+        .rental-period-info {
+            background: rgba(255, 0, 51, 0.1);
+            border: 1px solid rgba(255, 0, 51, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .rental-period-info h4 {
+            font-family: 'Orbitron', monospace;
+            color: #FF0033;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .rental-period-info p {
+            margin-bottom: 8px;
+        }
+
+        .rental-period-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Continue Button */
+        .continue-section {
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.5s forwards;
+        }
+
+        .continue-btn {
+            padding: 18px 40px;
+            background: transparent;
+            border: 2px solid #FF0033;
+            color: #FF0033;
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .continue-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .continue-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #FF0033;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+            transform: skewX(-20deg);
+        }
+
+        .continue-btn:hover {
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.4);
+        }
+
+        .continue-btn:hover::before {
+            transform: skewX(-20deg) translateX(100%);
+            left: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 15px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .selected-bike-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .duration-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .back-button {
+                position: static;
+                transform: none;
+                margin: 0 auto 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <button class="back-button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+                BACK
+            </button>
+            <h1 class="page-title" data-text="SELECT DURATION">SELECT DURATION</h1>
+            <div class="page-subtitle">Choose your rental period</div>
+        </div>
+
+        <!-- Selected Bike Info -->
+        <div class="selected-bike-info" id="selectedBikeInfo">
+            <img id="bikeImage" class="bike-image" src="" alt="Selected Bike">
+            <div class="bike-details">
+                <h3 id="bikeName">Loading...</h3>
+                <p id="bikeDescription">Loading bike details...</p>
+            </div>
+        </div>
+
+        <!-- Pricing Banner -->
+        <div class="pricing-banner" id="pricingBanner" style="display: none;">
+            <div class="banner-content">
+                <i class="fas fa-star"></i>
+                <span id="bannerText">Book for longer durations to get better deals compared to the standard 1-day
+                    price!</span>
+            </div>
+        </div>
+
+        <!-- Duration Options -->
+        <div class="duration-grid" id="durationGrid">
+            <!-- Duration cards will be populated by JavaScript -->
+        </div>
+
+
+
+        <!-- Continue Button -->
+        <div class="continue-section">
+            <button class="continue-btn" id="continueBtn" onclick="proceedToAccessories()">
+                <i class="fas fa-arrow-right"></i>
+                CONTINUE TO ACCESSORIES
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedBike = null;
+        let selectedDuration = null;
+        let selectedPricing = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSelectedBike();
+        });
+
+        function loadSelectedBike() {
+            // Get bike ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const bikeId = urlParams.get('bikeId');
+
+            if (!bikeId) {
+                alert('No bike selected. Redirecting to bike selection.');
+                window.location.href = 'bike-selection.html';
+                return;
+            }
+
+            // Wait for Firebase to load
+            waitForDB(function (db) {
+                db.collection('bikes').doc(bikeId).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            selectedBike = { id: doc.id, ...doc.data() };
+                            displayBikeInfo();
+                            createDurationOptions();
+                        } else {
+                            alert('Bike not found. Redirecting to bike selection.');
+                            window.location.href = 'bike-selection.html';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading bike:', error);
+                        alert('Error loading bike details. Please try again.');
+                    });
+            });
+        }
+
+        function waitForDB(callback) {
+            if (window.db) {
+                callback(window.db);
+            } else {
+                setTimeout(function () { waitForDB(callback); }, 50);
+            }
+        }
+
+        function displayBikeInfo() {
+            document.getElementById('bikeName').textContent = selectedBike.name;
+            document.getElementById('bikeDescription').textContent = selectedBike.description || 'Premium motorcycle rental';
+            document.getElementById('bikeImage').src = selectedBike.image || 'https://via.placeholder.com/150x100?text=Bike';
+        }
+
+        function createDurationOptions() {
+            const grid = document.getElementById('durationGrid');
+            const pricing = selectedBike.pricing || {};
+
+            // Calculate rental days from user details
+            const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+            const calculatedDays = calculateRentalDaysFromDates(userDetails.pickupDate, userDetails.dropoffDate);
+
+            // Default pricing if not set
+            const basePrice = selectedBike.price || 500;
+            const durations = [
+                {
+                    id: '1day',
+                    title: '1-2 Days',
+                    period: 'Short-term rental',
+                    perDayRate: pricing.oneDay || basePrice,
+                    icon: 'fas fa-clock',
+                    days: 1,
+                    maxDays: 2
+                },
+                {
+                    id: '3days',
+                    title: '3-6 Days',
+                    period: 'Weekend adventure',
+                    perDayRate: pricing.threeDays || (basePrice * 0.95),
+                    icon: 'fas fa-calendar-week',
+                    days: 3,
+                    maxDays: 6,
+                    savings: pricing.threeDays ? Math.round(((basePrice) - pricing.threeDays) / basePrice * 100) : 5
+                },
+                {
+                    id: '1week',
+                    title: '1 Week - 1 Month',
+                    period: 'Extended touring',
+                    perDayRate: pricing.oneWeek || (basePrice * 0.85),
+                    icon: 'fas fa-calendar-alt',
+                    days: 7,
+                    maxDays: 29,
+                    savings: pricing.oneWeek ? Math.round(((basePrice) - pricing.oneWeek) / basePrice * 100) : 15
+                },
+                {
+                    id: '1month',
+                    title: '1 Month+',
+                    period: 'Long-term rental',
+                    perDayRate: pricing.oneMonth || (basePrice * 0.75),
+                    icon: 'fas fa-calendar',
+                    days: 30,
+                    maxDays: Infinity,
+                    savings: pricing.oneMonth ? Math.round(((basePrice) - pricing.oneMonth) / basePrice * 100) : 25
+                }
+            ];
+
+            grid.innerHTML = '';
+
+            // Determine which tier the calculated days fall into using strict logic
+            const selectedTierIndex = determineStrictTier(calculatedDays);
+            let autoSelectedDuration = null;
+
+            // Only create and show the applicable duration card
+            const applicableDuration = durations[selectedTierIndex];
+            const card = document.createElement('div');
+            card.className = 'duration-card selected';
+            card.dataset.duration = applicableDuration.id;
+            card.dataset.perdayrate = applicableDuration.perDayRate;
+            card.dataset.days = applicableDuration.days;
+
+            const totalPrice = applicableDuration.perDayRate * calculatedDays;
+            const baseDailyRate = basePrice;
+            const isDiscounted = applicableDuration.perDayRate < baseDailyRate;
+
+            // Calculate savings amount per day
+            const dailySavings = isDiscounted ? (baseDailyRate - applicableDuration.perDayRate) : 0;
+
+            const savingsHtml = applicableDuration.savings && isDiscounted ?
+                `<div class="duration-savings">Save ${applicableDuration.savings}% • AED ${dailySavings.toFixed(0)} less per day</div>` : '';
+
+            card.innerHTML = `
+                <i class="${applicableDuration.icon} duration-icon"></i>
+                <div class="duration-title">${applicableDuration.title}</div>
+                <div class="duration-period">${applicableDuration.period}</div>
+                <div class="duration-price">AED ${Math.round(totalPrice)}</div>
+                <div class="duration-per-day" style="font-size: 1rem; color: ${isDiscounted ? '#4CAF50' : '#888'}; font-weight: 600;">
+                    <strong>AED ${applicableDuration.perDayRate.toFixed(0)}/day</strong>
+                    ${isDiscounted ? `<br><small style="color: #666; font-size: 0.8rem;">vs AED ${baseDailyRate}/day normally</small>` : ''}
+                </div>
+                ${savingsHtml}
+                <div class="duration-status optimal">✓ Selected for ${calculatedDays} day${calculatedDays > 1 ? 's' : ''}</div>
+            `;
+
+            card.addEventListener('click', () => selectDuration(applicableDuration.id, totalPrice, calculatedDays, applicableDuration.perDayRate));
+            grid.appendChild(card);
+
+            // Auto-select the duration
+            autoSelectedDuration = {
+                id: applicableDuration.id,
+                totalPrice: totalPrice,
+                days: calculatedDays,
+                perDayRate: applicableDuration.perDayRate
+            };
+
+            selectDuration(autoSelectedDuration.id, autoSelectedDuration.totalPrice, autoSelectedDuration.days, autoSelectedDuration.perDayRate);
+
+            // Show pricing banner and rental period info
+            showPricingBanner(calculatedDays, applicableDuration.perDayRate, basePrice);
+            showRentalPeriodInfo(calculatedDays, userDetails);
+        }
+
+        function calculateRentalDaysFromDates(pickupDate, dropoffDate) {
+            if (!pickupDate || !dropoffDate) return 1;
+            const pickup = new Date(pickupDate);
+            const dropoff = new Date(dropoffDate);
+            const diffTime = Math.abs(dropoff - pickup);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays > 0 ? diffDays : 1;
+        }
+
+        function determineStrictTier(days) {
+            // Strict booking duration selection logic:
+            // - 1-2 days: ONLY first option (index 0)
+            // - 3-6 days: ONLY second option (index 1) 
+            // - 7-29 days: ONLY third option (index 2)
+            // - 30+ days: ONLY fourth option (index 3)
+
+            if (days >= 1 && days <= 2) {
+                return 0; // First option: 1-2 Days
+            } else if (days >= 3 && days <= 6) {
+                return 1; // Second option: 3-6 Days
+            } else if (days >= 7 && days <= 29) {
+                return 2; // Third option: 1 Week - 1 Month
+            } else if (days >= 30) {
+                return 3; // Fourth option: 1 Month+
+            }
+
+            // Default fallback (should not happen with valid input)
+            return 0;
+        }
+
+        function showPricingBanner(days, selectedRate, baseRate) {
+            const banner = document.getElementById('pricingBanner');
+            const bannerText = document.getElementById('bannerText');
+
+            if (selectedRate < baseRate) {
+                const savings = ((baseRate - selectedRate) / baseRate * 100).toFixed(0);
+                const savingsAmount = (baseRate - selectedRate).toFixed(0);
+                bannerText.textContent = `Great choice! You're saving ${savings}% (AED ${savingsAmount}/day) compared to the standard 1-day price of AED ${baseRate}/day!`;
+            } else {
+                bannerText.textContent = `Book for longer durations to get better deals compared to the standard 1-day price of AED ${baseRate}/day!`;
+            }
+
+            banner.style.display = 'block';
+        }
+
+        function showRentalPeriodInfo(days, userDetails) {
+            const tierNames = {
+                0: '1-2 Days',
+                1: '3-6 Days',
+                2: '1 Week - 1 Month',
+                3: '1 Month+'
+            };
+
+            const selectedTierIndex = determineStrictTier(days);
+            const tierName = tierNames[selectedTierIndex];
+
+            const infoHtml = `
+                <div class="rental-period-info">
+                    <h4><i class="fas fa-calendar-check"></i> Your Rental Period</h4>
+                    <p><strong>${days} day${days > 1 ? 's' : ''}</strong> from ${formatDate(userDetails.pickupDate)} to ${formatDate(userDetails.dropoffDate)}</p>
+                    <p style="color: #888; font-size: 0.9rem;">Your rental duration automatically qualifies for the <strong style="color: #FF0033;">${tierName}</strong> pricing tier.</p>
+                </div>
+            `;
+
+            // Insert before duration grid
+            const container = document.querySelector('.container');
+            const durationGrid = document.getElementById('durationGrid');
+            const infoDiv = document.createElement('div');
+            infoDiv.innerHTML = infoHtml;
+            container.insertBefore(infoDiv, durationGrid);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Not set';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function showDisabledMessage() {
+            const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+            const calculatedDays = calculateRentalDaysFromDates(userDetails.pickupDate, userDetails.dropoffDate);
+            alert(`This pricing tier is not available for your ${calculatedDays}-day rental period. Only one pricing tier is available based on your booking duration.`);
+        }
+
+        function selectDuration(durationId, totalPrice, days, perDayRate) {
+            // Remove previous selection (except disabled cards)
+            document.querySelectorAll('.duration-card:not(.disabled)').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Select current (if not disabled)
+            const selectedCard = document.querySelector(`[data-duration="${durationId}"]`);
+            if (!selectedCard.classList.contains('disabled')) {
+                selectedCard.classList.add('selected');
+
+                selectedDuration = durationId;
+                selectedPricing = {
+                    totalPrice: totalPrice,
+                    days: days,
+                    pricePerDay: perDayRate
+                };
+
+                // Enable continue button
+                const continueBtn = document.getElementById('continueBtn');
+                continueBtn.classList.add('active');
+
+                // Store selection in localStorage
+                localStorage.setItem('selectedDuration', JSON.stringify({
+                    duration: durationId,
+                    pricing: selectedPricing,
+                    bike: selectedBike
+                }));
+
+                // Show confirmation message for upgrades
+                const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+                const originalDays = calculateRentalDaysFromDates(userDetails.pickupDate, userDetails.dropoffDate);
+
+                if (days > originalDays) {
+                    const savings = ((selectedBike.price - perDayRate) * originalDays).toFixed(0);
+                    showUpgradeConfirmation(durationId, originalDays, days, perDayRate, savings);
+                }
+            }
+        }
+
+        function showUpgradeConfirmation(durationId, originalDays, tierDays, perDayRate, savings) {
+            const tierNames = {
+                '1day': '1 Day',
+                '3days': '3 Days',
+                '1week': '1 Week',
+                '1month': '1 Month'
+            };
+
+            const message = `🎉 Great choice! You've upgraded to the ${tierNames[durationId]} pricing tier.\n\n` +
+                `✅ Your ${originalDays}-day rental now gets the better rate of AED ${perDayRate}/day\n` +
+                `💰 You'll save AED ${savings} compared to the standard daily rate!\n\n` +
+                `This pricing tier offers the best value for your rental period.`;
+
+            // Show a nice confirmation (you could replace this with a custom modal)
+            setTimeout(() => {
+                alert(message);
+            }, 500);
+        }
+
+        function proceedToAccessories() {
+            if (!selectedDuration) {
+                alert('Please select a rental duration first.');
+                return;
+            }
+
+            // Store the selection and proceed
+            localStorage.setItem('selectedBike', JSON.stringify(selectedBike));
+            localStorage.setItem('selectedDuration', JSON.stringify({
+                duration: selectedDuration,
+                pricing: selectedPricing
+            }));
+
+            // Proceed to accessories page
+            window.location.href = 'accessories.html';
+        }
+
+        // Custom duration calculation
+        function calculateCustomPricing() {
+            const customDays = parseInt(document.getElementById('customDays').value);
+
+            if (!customDays || customDays < 1) {
+                alert('Please enter a valid number of days (minimum 1)');
+                return;
+            }
+
+            const pricing = selectedBike.pricing || {};
+            const basePrice = selectedBike.price || 500;
+
+            // Calculate price based on duration using tiered per-day pricing logic
+            let totalPrice;
+            let perDayRate;
+            let comparisonText = '';
+
+            if (customDays === 1) {
+                perDayRate = pricing.oneDay || basePrice;
+                totalPrice = perDayRate * customDays;
+                comparisonText = 'Standard daily rate';
+            } else if (customDays <= 3) {
+                // Use 3-day per-day rate if available, otherwise calculate
+                perDayRate = pricing.threeDays || (basePrice * 0.95);
+                totalPrice = perDayRate * customDays;
+                const savings = ((basePrice - perDayRate) / basePrice * 100).toFixed(1);
+                comparisonText = `${savings}% off daily rate • Save AED ${(basePrice - perDayRate).toFixed(0)} per day`;
+            } else if (customDays <= 7) {
+                // Use weekly per-day rate calculation
+                perDayRate = pricing.oneWeek || (basePrice * 0.85);
+                totalPrice = perDayRate * customDays;
+                const savings = ((basePrice - perDayRate) / basePrice * 100).toFixed(1);
+                comparisonText = `${savings}% off daily rate • Save AED ${(basePrice - perDayRate).toFixed(0)} per day`;
+            } else if (customDays <= 30) {
+                // Use monthly per-day rate calculation for longer periods
+                perDayRate = pricing.oneMonth || (basePrice * 0.75);
+                totalPrice = perDayRate * customDays;
+                const savings = ((basePrice - perDayRate) / basePrice * 100).toFixed(1);
+                comparisonText = `${savings}% off daily rate • Save AED ${(basePrice - perDayRate).toFixed(0)} per day`;
+            } else {
+                // For very long periods, use monthly per-day rate
+                perDayRate = pricing.oneMonth || (basePrice * 0.75);
+                totalPrice = perDayRate * customDays;
+                const savings = ((basePrice - perDayRate) / basePrice * 100).toFixed(1);
+                comparisonText = `${savings}% off daily rate • Long-term discount applied`;
+            }
+
+            // Display the results
+            document.getElementById('customTotalPrice').textContent = `AED ${Math.round(totalPrice)}`;
+            document.getElementById('customPerDay').textContent = `AED ${perDayRate.toFixed(0)}/day`;
+            document.getElementById('customComparison').textContent = comparisonText;
+
+            // Show the pricing display
+            const display = document.getElementById('customPricingDisplay');
+            display.classList.add('active');
+
+            // Store the custom pricing for selection
+            window.customPricingData = {
+                days: customDays,
+                totalPrice: totalPrice,
+                perDayRate: perDayRate
+            };
+        }
+
+        function selectCustomDuration() {
+            if (!window.customPricingData) {
+                alert('Please calculate pricing first');
+                return;
+            }
+
+            // Remove selection from fixed duration cards
+            document.querySelectorAll('.duration-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            const customData = window.customPricingData;
+            selectedDuration = `custom_${customData.days}days`;
+            selectedPricing = {
+                totalPrice: customData.totalPrice,
+                days: customData.days,
+                pricePerDay: customData.perDayRate
+            };
+
+            // Enable continue button
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.classList.add('active');
+
+            // Store selection in localStorage
+            localStorage.setItem('selectedDuration', JSON.stringify({
+                duration: selectedDuration,
+                pricing: selectedPricing,
+                bike: selectedBike
+            }));
+
+            // Visual feedback
+            document.querySelector('.custom-select-btn').textContent = '✓ Selected';
+            document.querySelector('.custom-select-btn').style.background = '#4CAF50';
+            document.querySelector('.custom-select-btn').style.borderColor = '#4CAF50';
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('DOMContentLoaded', function () {
+            const customInput = document.getElementById('customDays');
+            if (customInput) {
+                customInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        calculateCustomPricing();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

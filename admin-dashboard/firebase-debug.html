@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Firebase Debug Test</h1>
+        
+        <div class="test info">
+            <h3>Step 1: Firebase Initialization</h3>
+            <button onclick="testFirebaseInit()">Test Firebase Init</button>
+            <div id="initResult"></div>
+        </div>
+        
+        <div class="test info">
+            <h3>Step 2: Database Connection</h3>
+            <button onclick="testDatabase()">Test Database</button>
+            <div id="dbResult"></div>
+        </div>
+        
+        <div class="test info">
+            <h3>Step 3: Add Test Bike</h3>
+            <button onclick="addTestBike()">Add Test Bike</button>
+            <div id="addResult"></div>
+        </div>
+        
+        <div class="test info">
+            <h3>Step 4: Get All Bikes</h3>
+            <button onclick="getBikes()">Get Bikes</button>
+            <div id="getResult"></div>
+        </div>
+        
+        <div class="test info">
+            <h3>Step 5: Add Test Booking</h3>
+            <button onclick="addTestBooking()">Add Test Booking</button>
+            <div id="bookingResult"></div>
+        </div>
+        
+        <div class="test info">
+            <h3>Step 6: Auto-Populate All Data</h3>
+            <button onclick="populateAllData()">Populate All Sample Data</button>
+            <div id="populateResult"></div>
+        </div>
+        
+        <h3>📋 Console Log:</h3>
+        <div id="log"></div>
+        
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+    <script>
+        let db, auth, storage;
+        const logDiv = document.getElementById('log');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            logDiv.textContent = '';
+        }
+        
+        function showResult(divId, message, isSuccess = true) {
+            const div = document.getElementById(divId);
+            div.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+        
+        function testFirebaseInit() {
+            try {
+                log('🚀 Testing Firebase initialization...');
+                
+                const firebaseConfig = {
+                    apiKey: "YOUR_FIREBASE_API_KEY",
+                    authDomain: "YOUR_PROJECT.firebaseapp.com",
+                    projectId: "YOUR_FIREBASE_PROJECT_ID",
+                    storageBucket: "YOUR_PROJECT.firebasestorage.app",
+                    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                    appId: "1:YOUR_MESSAGING_SENDER_ID:web:27d28d44e449306b726b97",
+                    measurementId: "YOUR_MEASUREMENT_ID"
+                };
+                
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                auth = firebase.auth();
+                storage = firebase.storage();
+                
+                log('✅ Firebase initialized successfully');
+                log(`📊 Project ID: ${firebaseConfig.projectId}`);
+                log(`🔥 Firebase version: ${firebase.SDK_VERSION || '9.22.1'}`);
+                
+                showResult('initResult', '✅ Firebase initialized successfully!', true);
+                
+            } catch (error) {
+                log(`❌ Firebase init error: ${error.message}`);
+                showResult('initResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function testDatabase() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 1 first.');
+                }
+                
+                log('🔍 Testing database connection...');
+                
+                // Test database connection by trying to get settings
+                db.collection('settings').doc('app').get()
+                    .then(doc => {
+                        log('✅ Database connection successful');
+                        log(`📄 Settings document exists: ${doc.exists}`);
+                        if (doc.exists) {
+                            log(`📋 Settings data: ${JSON.stringify(doc.data(), null, 2)}`);
+                        }
+                        showResult('dbResult', '✅ Database connection successful!', true);
+                    })
+                    .catch(error => {
+                        log(`❌ Database error: ${error.message}`);
+                        showResult('dbResult', `❌ Database error: ${error.message}`, false);
+                    });
+                    
+            } catch (error) {
+                log(`❌ Database test error: ${error.message}`);
+                showResult('dbResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function addTestBike() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 1 first.');
+                }
+                
+                log('🚴‍♂️ Adding test bike...');
+                
+                const testBike = {
+                    name: 'Test Bike ' + Date.now(),
+                    model: 'Test Model',
+                    type: 'mountain',
+                    year: 2023,
+                    price: 49.99,
+                    status: 'available',
+                    features: ['Test Feature 1', 'Test Feature 2'],
+                    description: 'This is a test bike',
+                    image: 'https://via.placeholder.com/300x200',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                db.collection('bikes').add(testBike)
+                    .then(docRef => {
+                        log(`✅ Test bike added with ID: ${docRef.id}`);
+                        showResult('addResult', `✅ Test bike added! ID: ${docRef.id}`, true);
+                    })
+                    .catch(error => {
+                        log(`❌ Add bike error: ${error.message}`);
+                        showResult('addResult', `❌ Error: ${error.message}`, false);
+                    });
+                    
+            } catch (error) {
+                log(`❌ Add bike test error: ${error.message}`);
+                showResult('addResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function getBikes() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 1 first.');
+                }
+                
+                log('📋 Getting all bikes...');
+                
+                db.collection('bikes').get()
+                    .then(snapshot => {
+                        log(`✅ Found ${snapshot.size} bikes`);
+                        snapshot.forEach(doc => {
+                            log(`🚴‍♂️ Bike: ${doc.data().name} (ID: ${doc.id})`);
+                        });
+                        showResult('getResult', `✅ Found ${snapshot.size} bikes`, true);
+                    })
+                    .catch(error => {
+                        log(`❌ Get bikes error: ${error.message}`);
+                        showResult('getResult', `❌ Error: ${error.message}`, false);
+                    });
+                    
+            } catch (error) {
+                log(`❌ Get bikes test error: ${error.message}`);
+                showResult('getResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function addTestBooking() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 1 first.');
+                }
+                
+                log('📅 Adding test booking...');
+                
+                // First get existing bikes and users
+                Promise.all([
+                    db.collection('bikes').limit(1).get(),
+                    db.collection('users').limit(1).get()
+                ])
+                .then(([bikesSnapshot, usersSnapshot]) => {
+                    if (bikesSnapshot.size === 0) {
+                        throw new Error('No bikes found. Add bikes first.');
+                    }
+                    if (usersSnapshot.size === 0) {
+                        throw new Error('No users found. Add users first.');
+                    }
+                    
+                    const bikeId = bikesSnapshot.docs[0].id;
+                    const userId = usersSnapshot.docs[0].id;
+                    
+                    const testBooking = {
+                        userId: userId,
+                        bikeId: bikeId,
+                        startDate: new Date(),
+                        endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+                        startTime: '10:00 AM',
+                        endTime: '10:00 AM',
+                        totalAmount: 99.98,
+                        depositAmount: 50,
+                        status: 'active',
+                        paymentMethod: 'credit_card',
+                        paymentStatus: 'paid',
+                        notes: 'Test booking created via debug page',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    return db.collection('bookings').add(testBooking);
+                })
+                .then(docRef => {
+                    log(`✅ Test booking added with ID: ${docRef.id}`);
+                    showResult('bookingResult', `✅ Test booking added! ID: ${docRef.id}`, true);
+                })
+                .catch(error => {
+                    log(`❌ Add booking error: ${error.message}`);
+                    showResult('bookingResult', `❌ Error: ${error.message}`, false);
+                });
+                    
+            } catch (error) {
+                log(`❌ Add booking test error: ${error.message}`);
+                showResult('bookingResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function populateAllData() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 1 first.');
+                }
+                
+                log('🚀 Populating all sample data...');
+                showResult('populateResult', '🔄 Populating data...', true);
+                
+                // Sample data
+                const bikes = [
+                    {
+                        name: 'Mountain Pro X1',
+                        model: '2023',
+                        type: 'mountain',
+                        year: 2023,
+                        price: 49.99,
+                        status: 'available',
+                        features: ['21 Gears', 'Disc Brakes', 'Front Suspension'],
+                        description: 'Perfect for off-road adventures.',
+                        image: 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=300',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    },
+                    {
+                        name: 'Roadster 5000',
+                        model: '2023',
+                        type: 'road',
+                        year: 2023,
+                        price: 39.99,
+                        status: 'rented',
+                        features: ['18 Gears', 'Lightweight Frame'],
+                        description: 'Built for speed on paved roads.',
+                        image: 'https://images.unsplash.com/photo-1507030585642-3a6c3f8e3f1d?w=300',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                ];
+                
+                const users = [
+                    {
+                        name: 'John Doe',
+                        email: 'john.doe@email.com',
+                        phone: '+1-234-567-8901',
+                        status: 'active',
+                        membershipType: 'regular',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    },
+                    {
+                        name: 'Jane Smith',
+                        email: 'jane.smith@email.com',
+                        phone: '+1-234-567-8903',
+                        status: 'active',
+                        membershipType: 'premium',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                ];
+                
+                const settings = {
+                    companyName: 'Four Season Moto',
+                    currency: 'AED',
+                    language: 'en',
+                    email: 'info@firstseasonmoto.com',
+                    phone: '+1-234-567-8900',
+                    address: '123 Bike Street, Dubai, UAE',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add all data
+                Promise.all([
+                    // Add settings
+                    db.collection('settings').doc('app').set(settings),
+                    // Add bikes
+                    ...bikes.map(bike => db.collection('bikes').add(bike)),
+                    // Add users
+                    ...users.map(user => db.collection('users').add(user))
+                ])
+                .then(results => {
+                    log('✅ All sample data populated successfully!');
+                    log(`📊 Added: ${bikes.length} bikes, ${users.length} users, 1 settings`);
+                    showResult('populateResult', '✅ All data populated successfully!', true);
+                })
+                .catch(error => {
+                    log(`❌ Populate error: ${error.message}`);
+                    showResult('populateResult', `❌ Error: ${error.message}`, false);
+                });
+                
+            } catch (error) {
+                log(`❌ Populate test error: ${error.message}`);
+                showResult('populateResult', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        // Auto-run first test on page load
+        window.addEventListener('load', () => {
+            log('🔧 Firebase Debug Test loaded');
+            log('👆 Click "Test Firebase Init" to start');
+        });
+    </script>
+</body>
+</html>

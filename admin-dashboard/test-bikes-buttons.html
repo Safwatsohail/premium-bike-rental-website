@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Bikes Buttons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+        }
+        .test-card {
+            background: #1a1a1a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background: #ff0033;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #cc0029;
+        }
+        #output {
+            background: #0a0a0a;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bikes Buttons Test</h1>
+    
+    <div class="test-card">
+        <h2>Test Bike Card</h2>
+        <p>Bike ID: test-bike-123</p>
+        <button onclick="testEdit('test-bike-123')">Test Edit Button</button>
+        <button onclick="testDelete('test-bike-123')">Test Delete Button</button>
+    </div>
+
+    <div id="output">
+        <strong>Output:</strong><br>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `${new Date().toLocaleTimeString()}: ${message}<br>`;
+        }
+
+        function testEdit(id) {
+            log(`✅ Edit button clicked for bike: ${id}`);
+            if (typeof window.openEditBikeModal === 'function') {
+                log('✅ openEditBikeModal function exists');
+                try {
+                    window.openEditBikeModal(id);
+                    log('✅ openEditBikeModal called successfully');
+                } catch (error) {
+                    log(`❌ Error calling openEditBikeModal: ${error.message}`);
+                }
+            } else {
+                log('❌ openEditBikeModal function NOT found');
+            }
+        }
+
+        function testDelete(id) {
+            log(`✅ Delete button clicked for bike: ${id}`);
+            if (typeof window.openDeleteConfirm === 'function') {
+                log('✅ openDeleteConfirm function exists');
+                try {
+                    window.openDeleteConfirm(id);
+                    log('✅ openDeleteConfirm called successfully');
+                } catch (error) {
+                    log(`❌ Error calling openDeleteConfirm: ${error.message}`);
+                }
+            } else {
+                log('❌ openDeleteConfirm function NOT found');
+            }
+        }
+
+        // Simulate the functions being loaded
+        window.openEditBikeModal = function(id) {
+            log(`📝 EDIT MODAL would open for: ${id}`);
+            alert(`Edit modal for bike: ${id}`);
+        };
+
+        window.openDeleteConfirm = function(id) {
+            log(`🗑️ DELETE CONFIRM would open for: ${id}`);
+            alert(`Delete confirmation for bike: ${id}`);
+        };
+
+        log('Page loaded. Click buttons to test.');
+    </script>
+</body>
+</html>

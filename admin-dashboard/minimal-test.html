@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Firebase Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Minimal Firebase Test</h1>
+    
+    <div class="test">
+        <h3>Step 1: Load Firebase SDK</h3>
+        <div id="sdkResult">Loading...</div>
+    </div>
+    
+    <div class="test">
+        <h3>Step 2: Initialize Firebase</h3>
+        <button onclick="initFirebase()">Initialize Firebase</button>
+        <div id="initResult"></div>
+    </div>
+    
+    <div class="test">
+        <h3>Step 3: Test Database</h3>
+        <button onclick="testDatabase()">Test Database</button>
+        <div id="dbResult"></div>
+    </div>
+    
+    <div class="test">
+        <h3>Step 4: Add Simple Data</h3>
+        <button onclick="addSimpleData()">Add Simple Data</button>
+        <div id="addResult"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        let db;
+        
+        // Test 1: Check if Firebase SDK loaded
+        window.addEventListener('load', () => {
+            if (typeof firebase !== 'undefined') {
+                document.getElementById('sdkResult').innerHTML = '<div class="success">✅ Firebase SDK loaded successfully</div>';
+                console.log('✅ Firebase SDK loaded');
+            } else {
+                document.getElementById('sdkResult').innerHTML = '<div class="error">❌ Firebase SDK failed to load</div>';
+                console.error('❌ Firebase SDK not loaded');
+            }
+        });
+        
+        function initFirebase() {
+            try {
+                const firebaseConfig = {
+                    apiKey: "YOUR_FIREBASE_API_KEY",
+                    authDomain: "YOUR_PROJECT.firebaseapp.com",
+                    projectId: "YOUR_FIREBASE_PROJECT_ID",
+                    storageBucket: "YOUR_PROJECT.firebasestorage.app",
+                    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                    appId: "1:YOUR_MESSAGING_SENDER_ID:web:27d28d44e449306b726b97",
+                    measurementId: "YOUR_MEASUREMENT_ID"
+                };
+                
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                document.getElementById('initResult').innerHTML = '<div class="success">✅ Firebase initialized successfully</div>';
+                console.log('✅ Firebase initialized');
+                console.log('Database object:', db);
+                
+            } catch (error) {
+                document.getElementById('initResult').innerHTML = `<div class="error">❌ Firebase init failed: ${error.message}</div>`;
+                console.error('❌ Firebase init error:', error);
+            }
+        }
+        
+        function testDatabase() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 2 first.');
+                }
+                
+                console.log('Testing database connection...');
+                console.log('db object:', db);
+                console.log('db.collection function:', typeof db.collection);
+                
+                // Test if we can call collection()
+                const testRef = db.collection('test');
+                console.log('Collection reference created:', testRef);
+                
+                document.getElementById('dbResult').innerHTML = '<div class="success">✅ Database connection successful</div>';
+                
+            } catch (error) {
+                document.getElementById('dbResult').innerHTML = `<div class="error">❌ Database test failed: ${error.message}</div>`;
+                console.error('❌ Database test error:', error);
+            }
+        }
+        
+        function addSimpleData() {
+            try {
+                if (!db) {
+                    throw new Error('Firebase not initialized. Run Step 2 first.');
+                }
+                
+                console.log('Adding simple test data...');
+                
+                const testData = {
+                    name: 'Test Item ' + Date.now(),
+                    timestamp: new Date().toISOString(),
+                    test: true
+                };
+                
+                db.collection('test').add(testData)
+                    .then(docRef => {
+                        console.log('Document added with ID:', docRef.id);
+                        document.getElementById('addResult').innerHTML = `<div class="success">✅ Test data added! ID: ${docRef.id}</div>`;
+                    })
+                    .catch(error => {
+                        console.error('Add data error:', error);
+                        document.getElementById('addResult').innerHTML = `<div class="error">❌ Add data failed: ${error.message}</div>`;
+                    });
+                
+            } catch (error) {
+                document.getElementById('addResult').innerHTML = `<div class="error">❌ Add data error: ${error.message}</div>`;
+                console.error('❌ Add data error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+/* RTL (Right-to-Left) Styles for Arabic Support */
+
+/* Base RTL Styles */
+.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* RTL Layout Adjustments */
+.rtl .container {
+    direction: rtl;
+}
+
+/* RTL Layout Adjustments - Sidebar stays on left */
+.rtl .sidebar {
+    left: 0;
+    right: auto;
+}
+
+.rtl .main-content {
+    margin-left: 280px;
+    margin-right: 20px;
+}
+
+.rtl .page-header {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.rtl .page-header h1 {
+    text-align: right;
+}
+
+.rtl .search-box {
+    direction: rtl;
+}
+
+.rtl .search-box i {
+    right: auto;
+    left: 15px;
+}
+
+.rtl .search-box input {
+    padding-right: 15px;
+    padding-left: 45px;
+}
+
+/* RTL Cards and Grids */
+.rtl .bike-card,
+.rtl .user-card,
+.rtl .booking-card {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .bike-header,
+.rtl .user-header,
+.rtl .booking-header {
+    direction: rtl;
+}
+
+.rtl .bike-title h3,
+.rtl .user-title h3,
+.rtl .booking-title h3 {
+    text-align: right;
+}
+
+.rtl .bike-price,
+.rtl .user-stats,
+.rtl .booking-amount {
+    text-align: left;
+}
+
+.rtl .bike-actions,
+.rtl .user-actions,
+.rtl .booking-actions {
+    direction: ltr;
+    justify-content: flex-end;
+}
+
+/* RTL Dashboard Content */
+.rtl .dashboard-content {
+    margin-left: 280px;
+    margin-right: 20px;
+    padding: 20px;
+}
+
+.rtl .stats-container {
+    direction: rtl;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-left: 0;
+}
+
+.rtl .stat-card {
+    direction: rtl;
+    text-align: right;
+    padding: 20px;
+}
+
+.rtl .stat-icon {
+    float: right;
+    margin-left: 15px;
+    margin-right: 0;
+}
+
+.rtl .stat-info {
+    text-align: right;
+}
+
+.rtl .stat-info h3 {
+    text-align: right;
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.rtl .stat-info p {
+    text-align: right;
+    margin: 0;
+}
+
+.rtl .recent-orders {
+    direction: rtl;
+    text-align: right;
+    margin-top: 30px;
+}
+
+.rtl .recent-orders h2 {
+    text-align: right;
+}
+
+.rtl .recent-orders table {
+    direction: rtl;
+}
+
+.rtl .recent-orders th,
+.rtl .recent-orders td {
+    text-align: right;
+    padding: 12px;
+}
+
+.rtl .recent-orders .table-actions {
+    direction: ltr;
+    text-align: left;
+}
+
+/* RTL Forms */
+.rtl .form-group {
+    text-align: right;
+}
+
+.rtl .form-group label {
+    text-align: right;
+    display: block;
+}
+
+.rtl .form-control {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .form-row {
+    direction: rtl;
+}
+
+.rtl select.form-control {
+    text-align: right;
+}
+
+.rtl textarea.form-control {
+    text-align: right;
+}
+
+/* RTL Tables */
+.rtl .table {
+    direction: rtl;
+}
+
+.rtl .table th,
+.rtl .table td {
+    text-align: right;
+}
+
+.rtl .table-actions {
+    direction: ltr;
+    text-align: left;
+}
+
+/* RTL Modals */
+.rtl .modal-content {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .modal-header {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .modal-title {
+    text-align: right;
+}
+
+.rtl .modal-footer {
+    direction: rtl;
+    text-align: left;
+}
+
+.rtl .close-modal {
+    left: 20px;
+    right: auto;
+}
+
+/* RTL Buttons */
+.rtl .btn {
+    direction: rtl;
+}
+
+.rtl .btn i {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+/* RTL Navigation */
+.rtl .sidebar ul {
+    direction: rtl;
+}
+
+.rtl .sidebar li a {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .sidebar li a i {
+    float: right;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.rtl .logo {
+    text-align: right;
+}
+
+.rtl .logo-img {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Statistics Cards */
+.rtl .stat-card {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .stat-number {
+    text-align: right;
+}
+
+.rtl .stat-label {
+    text-align: right;
+}
+
+/* RTL Dashboard Grid */
+.rtl .dashboard-grid {
+    direction: rtl;
+}
+
+.rtl .dashboard-card {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .dashboard-card h3 {
+    text-align: right;
+}
+
+.rtl .dashboard-card .value {
+    text-align: right;
+}
+
+/* RTL Charts */
+.rtl .chart-container {
+    direction: ltr; /* Charts should remain LTR */
+}
+
+.rtl .chart-title {
+    direction: rtl;
+    text-align: right;
+}
+
+/* RTL Filter Buttons */
+.rtl .filter-buttons {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .filter-buttons .btn {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Notifications */
+.rtl .notification {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .notification i {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Pagination */
+.rtl .pagination {
+    text-align: left;
+    direction: ltr;
+}
+
+.rtl .pagination .btn {
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+/* RTL Search Results */
+.rtl .no-results {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .no-results i {
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* RTL Loading States */
+.rtl .loading {
+    text-align: center;
+    direction: rtl;
+}
+
+.rtl .loading i {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Error States */
+.rtl .error {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .error i {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Success States */
+.rtl .success {
+    text-align: right;
+    direction: rtl;
+}
+
+.rtl .success i {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* RTL Settings Page */
+.rtl .settings-section {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .settings-section h3 {
+    text-align: right;
+}
+
+.rtl .settings-form {
+    direction: rtl;
+}
+
+.rtl .settings-form .form-group {
+    text-align: right;
+}
+
+.rtl .settings-form label {
+    text-align: right;
+}
+
+.rtl .theme-selector {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .theme-option {
+    direction: rtl;
+    text-align: right;
+}
+
+/* RTL Analytics Page */
+.rtl .analytics-overview {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .period-selector {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .period-selector .btn {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.rtl .chart-legend {
+    direction: rtl;
+    text-align: right;
+}
+
+/* RTL Responsive Adjustments */
+@media (max-width: 768px) {
+    .rtl .sidebar {
+        right: -280px;
+        left: auto;
+    }
+    
+    .rtl .sidebar.active {
+        right: 0;
+        left: auto;
+    }
+    
+    .rtl .main-content {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    
+    .rtl .mobile-menu-toggle {
+        right: 20px;
+        left: auto;
+    }
+}
+
+/* RTL Specific Font Sizes and Spacing */
+.rtl body {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.rtl h1, .rtl h2, .rtl h3, .rtl h4, .rtl h5, .rtl h6 {
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.rtl .sidebar li a {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.rtl .btn {
+    font-weight: 600;
+}
+
+.rtl .form-control {
+    font-size: 15px;
+}
+
+/* RTL Arabic Number Formatting */
+.rtl .price,
+.rtl .amount,
+.rtl .stat-number {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* RTL Calendar and Date Pickers */
+.rtl .calendar,
+.rtl .date-picker {
+    direction: ltr; /* Keep calendar LTR for better usability */
+}
+
+.rtl .date-input {
+    direction: rtl;
+}
+
+/* RTL Tooltips */
+.rtl .tooltip {
+    direction: rtl;
+    text-align: right;
+}
+
+/* RTL Dropdown Menus */
+.rtl .dropdown-menu {
+    direction: rtl;
+    text-align: right;
+    right: 0;
+    left: auto;
+}
+
+.rtl .dropdown-item {
+    text-align: right;
+    direction: rtl;
+}
+
+/* RTL Progress Bars */
+.rtl .progress {
+    direction: ltr; /* Progress bars should fill left-to-right */
+}
+
+.rtl .progress-label {
+    direction: rtl;
+    text-align: right;
+}
+
+/* RTL Badges and Tags */
+.rtl .badge,
+.rtl .tag {
+    direction: rtl;
+}
+
+.rtl .status-badge {
+    direction: rtl;
+}
+
+/* RTL Footer */
+.rtl footer {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .footer-links {
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .footer-links a {
+    margin-left: 20px;
+    margin-right: 0;
+}
+
+/* RTL Print Styles */
+@media print {
+    .rtl {
+        direction: rtl;
+    }
+    
+    .rtl .sidebar {
+        display: none;
+    }
+    
+    .rtl .main-content {
+        margin-right: 0;
+        margin-left: 0;
+    }
+}
+
+/* RTL Accessibility */
+.rtl .sr-only {
+    direction: rtl;
+}
+
+.rtl [aria-hidden="true"] {
+    direction: rtl;
+}
+
+/* RTL Focus States */
+.rtl .btn:focus,
+.rtl .form-control:focus,
+.rtl .btn:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* RTL Animation Adjustments */
+.rtl .slide-in-left {
+    transform: translateX(100%);
+}
+
+.rtl .slide-in-right {
+    transform: translateX(-100%);
+}
+
+.rtl .slide-in-left.active {
+    transform: translateX(0);
+}
+
+.rtl .slide-in-right.active {
+    transform: translateX(0);
+}
+
+/* RTL Specific Margins and Padding */
+.rtl .ml-3 { margin-left: 0; margin-right: 1rem; }
+.rtl .mr-3 { margin-right: 0; margin-left: 1rem; }
+.rtl .pl-3 { padding-left: 0; padding-right: 1rem; }
+.rtl .pr-3 { padding-right: 0; padding-left: 1rem; }
+
+.rtl .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+.rtl .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+.rtl .pl-2 { padding-left: 0; padding-right: 0.5rem; }
+.rtl .pr-2 { padding-right: 0; padding-left: 0.5rem; }
+
+/* RTL Text Alignment Utilities */
+.rtl .text-left { text-align: right; }
+.rtl .text-right { text-align: left; }
+.rtl .text-center { text-align: center; }
+
+/* RTL Flexbox Utilities */
+.rtl .justify-content-start { justify-content: flex-end; }
+.rtl .justify-content-end { justify-content: flex-start; }
+.rtl .justify-content-center { justify-content: center; }
+
+.rtl .align-items-start { align-items: flex-end; }
+.rtl .align-items-end { align-items: flex-start; }
+.rtl .align-items-center { align-items: center; }

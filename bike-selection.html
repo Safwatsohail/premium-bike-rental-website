@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Ride - Four Season Moto | Off-Road Bikes Dubai</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Choose from our premium fleet of off-road bikes, ATVs, dirt bikes, and jet skis for rent in Dubai. Four Season Moto offers the best adventure vehicles.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#FF0033">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+    <script src="js/firebase-preloader.js"></script>
+    <script src="js/mobile-performance.js"></script>
+    <script src="js/mobile-buttery-smooth.js"></script>
+    <script src="js/pricing-validator.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background-color: #000000;
+            background-image:
+                radial-gradient(circle at center, transparent 10%, #000000 100%),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(90deg, #050505 5px, transparent 5px),
+                linear-gradient(#0a0a0a 25%, #030303 25%, #030303 50%, transparent 50%, transparent 75%, #0d0d0d 75%, #0d0d0d);
+            background-position: center center, 0 2.5px, 5px 0px, 0px 5px, 5px 2.5px, 0 0, 0 0;
+            background-size: 100% 100%, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px;
+            background-attachment: fixed, scroll, scroll, scroll, scroll, scroll, scroll;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid #FF0033;
+            color: #FF0033;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: #FF0033;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.4);
+        }
+
+        .back-button i {
+            font-size: 0.8rem;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 45%, #FF0033 50%, transparent 55%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 4s infinite linear;
+            opacity: 0.5;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 60px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 5px #000;
+        }
+
+        .step.active .step-dot {
+            background: #FF0033;
+            border-color: #FF0033;
+            box-shadow: 0 0 0 5px #000, 0 0 15px rgba(255, 0, 51, 0.5);
+        }
+
+        .step.completed .step-dot {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .step-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Filters & Search */
+        .controls-section {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: #050505;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #FF0033;
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.1);
+        }
+
+        .search-box input:focus+i {
+            color: #FF0033;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 30px;
+            color: #888;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .filter-tag:hover {
+            border-color: #666;
+            color: #fff;
+        }
+
+        .filter-tag.active {
+            background: #FF0033;
+            border-color: #FF0033;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.3);
+        }
+
+        /* Bike Cards Grid */
+        .bikes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 40px;
+            perspective: 1000px;
+        }
+
+        .bike-card {
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid #222;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .bike-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #FF0033;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 51, 0.1);
+            z-index: 10;
+        }
+
+        .bike-image-container {
+            height: 250px;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bike-status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 0, 51, 0.9);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            z-index: 10;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 0, 51, 0.4);
+        }
+
+        .bike-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 1) 100%);
+        }
+
+        .bike-icon {
+            font-size: 5rem;
+            color: #333;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+        }
+
+        .bike-card:hover .bike-icon {
+            transform: scale(1.2) rotate(-5deg);
+            color: #fff;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 51, 0.4));
+        }
+
+        .bike-content {
+            padding: 30px;
+            position: relative;
+        }
+
+        .bike-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .bike-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .bike-price {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: #FF0033;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .bike-price span {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .bike-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .spec-item i {
+            color: #FF0033;
+            font-size: 0.8rem;
+        }
+
+        .select-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid #FF0033;
+            color: #FF0033;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .select-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #FF0033;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+            transform: skewX(-20deg);
+        }
+
+        .select-btn:hover {
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.4);
+        }
+
+        .select-btn:hover::before {
+            transform: skewX(-20deg) translateX(100%);
+            left: 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-family: 'Orbitron', monospace;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .loading i {
+            color: #FF0033;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .bikes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                padding: 30px 15px;
+            }
+
+            .page-title {
+                font-size: 2.8rem;
+                -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+            }
+
+            .page-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .bikes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+
+            .bike-card {
+                border-radius: 20px;
+            }
+
+            .bike-image-container {
+                height: 220px;
+            }
+
+            .bike-icon {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                margin-bottom: 40px;
+            }
+
+            .back-button {
+                position: static;
+                transform: none;
+                margin: 0 auto 20px;
+                padding: 10px 20px;
+                font-size: 0.8rem;
+                letter-spacing: 1.5px;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+                -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+                letter-spacing: 0;
+            }
+
+            .page-subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+            }
+
+            /* Progress Steps - Compact */
+            .progress-container {
+                margin-bottom: 40px;
+                padding: 0 10px;
+            }
+
+            .steps {
+                max-width: 100%;
+            }
+
+            .step-label {
+                font-size: 0.65rem;
+                letter-spacing: 0.5px;
+            }
+
+            .step-dot {
+                width: 10px;
+                height: 10px;
+                box-shadow: 0 0 0 4px #000;
+            }
+
+            .step.active .step-dot {
+                box-shadow: 0 0 0 4px #000, 0 0 12px rgba(255, 0, 51, 0.5);
+            }
+
+            /* Controls Section */
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+                gap: 15px;
+                border-radius: 16px;
+                margin-bottom: 35px;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .search-box input {
+                padding: 12px 15px 12px 45px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+
+            .search-box i {
+                left: 15px;
+                font-size: 0.9rem;
+            }
+
+            .filter-tags {
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .filter-tag {
+                padding: 8px 16px;
+                font-size: 0.7rem;
+                letter-spacing: 0.5px;
+            }
+
+            /* Bikes Grid */
+            .bikes-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .bike-card {
+                border-radius: 18px;
+                animation-delay: 0s !important;
+            }
+
+            .bike-card:hover {
+                transform: translateY(-5px) scale(1.01);
+            }
+
+            .bike-image-container {
+                height: 200px;
+            }
+
+            .bike-icon {
+                font-size: 3.5rem;
+            }
+
+            .bike-content {
+                padding: 20px;
+            }
+
+            .bike-header {
+                margin-bottom: 15px;
+            }
+
+            .bike-title {
+                font-size: 1.2rem;
+            }
+
+            .bike-price {
+                font-size: 1.1rem;
+            }
+
+            .bike-price span {
+                font-size: 0.75rem;
+            }
+
+            .bike-specs {
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .spec-item {
+                font-size: 0.8rem;
+            }
+
+            .spec-item i {
+                font-size: 0.75rem;
+            }
+
+            .select-btn {
+                padding: 12px;
+                font-size: 0.8rem;
+                letter-spacing: 1.5px;
+                border-radius: 10px;
+            }
+
+            .loading {
+                padding: 40px 20px;
+                font-size: 1rem;
+            }
+
+            .loading i {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 12px;
+            }
+
+            .page-header {
+                margin-bottom: 30px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+                -webkit-text-stroke: 1px rgba(255, 255, 255, 0.8);
+            }
+
+            .page-subtitle {
+                font-size: 0.75rem;
+            }
+
+            /* Progress Steps - Ultra Compact */
+            .progress-container {
+                margin-bottom: 30px;
+            }
+
+            .step-label {
+                font-size: 0.6rem;
+            }
+
+            .step-dot {
+                width: 8px;
+                height: 8px;
+                border-width: 1.5px;
+                box-shadow: 0 0 0 3px #000;
+            }
+
+            .step.active .step-dot {
+                box-shadow: 0 0 0 3px #000, 0 0 10px rgba(255, 0, 51, 0.5);
+            }
+
+            /* Controls */
+            .controls-section {
+                padding: 15px;
+                border-radius: 14px;
+                margin-bottom: 25px;
+            }
+
+            .search-box input {
+                padding: 10px 12px 10px 40px;
+                font-size: 0.8rem;
+            }
+
+            .search-box i {
+                left: 12px;
+            }
+
+            .filter-tags {
+                gap: 6px;
+            }
+
+            .filter-tag {
+                padding: 7px 14px;
+                font-size: 0.65rem;
+            }
+
+            /* Bike Cards */
+            .bikes-grid {
+                gap: 20px;
+            }
+
+            .bike-card {
+                border-radius: 16px;
+            }
+
+            .bike-image-container {
+                height: 180px;
+            }
+
+            .bike-icon {
+                font-size: 3rem;
+            }
+
+            .bike-content {
+                padding: 18px;
+            }
+
+            .bike-title {
+                font-size: 1.1rem;
+            }
+
+            .bike-price {
+                font-size: 1rem;
+            }
+
+            .bike-specs {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .spec-item {
+                font-size: 0.75rem;
+            }
+
+            .select-btn {
+                padding: 11px;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .bike-title {
+                font-size: 1rem;
+            }
+
+            .bike-price {
+                font-size: 0.95rem;
+            }
+
+            .filter-tag {
+                padding: 6px 12px;
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .bike-card:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+
+            .select-btn:active {
+                transform: scale(0.95);
+            }
+
+            .filter-tag:active {
+                transform: scale(0.95);
+            }
+
+            /* Larger touch targets */
+            .filter-tag {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .select-btn {
+                min-height: 48px;
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-width: 968px) and (orientation: landscape) {
+            .page-header {
+                margin-bottom: 30px;
+            }
+
+            .progress-container {
+                margin-bottom: 30px;
+            }
+
+            .controls-section {
+                margin-bottom: 30px;
+            }
+
+            .bikes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .bike-image-container {
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <button class="back-button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+                BACK
+            </button>
+            <h1 class="page-title" data-text="SELECT YOUR RIDE">SELECT YOUR RIDE</h1>
+            <div class="page-subtitle">Choose your weapon for the streets</div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-line"></div>
+            <div class="steps">
+                <div class="step completed">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step active">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Selection</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Gear</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="SEARCH MODELS...">
+            </div>
+            <div class="filter-tags" id="filterTags">
+                <button class="filter-tag active" data-filter="all">All</button>
+                <button class="filter-tag" data-filter="mountain">Mountain</button>
+                <button class="filter-tag" data-filter="electric">Electric</button>
+                <button class="filter-tag" data-filter="road">Road</button>
+                <button class="filter-tag" data-filter="hybrid">Hybrid</button>
+            </div>
+        </div>
+
+        <!-- Bikes Grid -->
+        <div class="bikes-grid" id="bikesContainer">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i><br>
+                LOADING FLEET...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allBikes = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let currentModalBike = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBikes();
+            setupFilters();
+            setupSearch();
+            setupModal();
+        });
+
+        function loadBikes() {
+            const grid = document.getElementById('bikesContainer');
+
+            // Try to show cached data instantly for fast UI
+            let usedCache = false;
+            try {
+                const cached = localStorage.getItem('fsm_bikes_cache');
+                if (cached) {
+                    const bikes = JSON.parse(cached);
+                    if (bikes && bikes.length > 0) {
+                        console.log('⚡ Bike Selection: Showing cached data first');
+                        allBikes = bikes;
+                        renderBikes();
+                        usedCache = true;
+                    }
+                }
+            } catch (e) { }
+
+            // Always fetch fresh data from Firebase to get latest updates (like new videoUrl)
+            console.log('🔄 Bike Selection: Fetching fresh data from Firebase...');
+            waitForDB(function (db) {
+                db.collection('bikes').get()
+                    .then(snapshot => {
+                        const freshBikes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        console.log('✅ Bike Selection: Fresh data loaded', freshBikes.length, 'bikes');
+
+                        // Update cache with fresh data
+                        localStorage.setItem('fsm_bikes_cache', JSON.stringify(freshBikes));
+
+                        // Update UI with fresh data
+                        allBikes = freshBikes;
+                        renderBikes();
+                    })
+                    .catch(error => {
+                        console.error('Error loading bikes:', error);
+                        if (!usedCache) {
+                            grid.innerHTML = '<div class="loading">Error loading fleet. Please try again.</div>';
+                        }
+                    });
+            });
+        }
+
+        function waitForDB(callback) {
+            if (window.db) {
+                callback(window.db);
+            } else {
+                setTimeout(function () { waitForDB(callback); }, 50);
+            }
+        }
+
+        function renderBikes() {
+            const container = document.getElementById('bikesContainer');
+            container.innerHTML = '';
+
+            const filtered = allBikes.filter(bike => {
+                const matchesFilter = currentFilter === 'all' || bike.type === currentFilter;
+                const matchesSearch = bike.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="loading">NO BIKES FOUND</div>';
+                return;
+            }
+
+            filtered.forEach((bike, index) => {
+                const card = document.createElement('div');
+                card.className = 'bike-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                // Check if bike is available
+                const isAvailable = !bike.status || bike.status === 'available';
+                const statusLabel = bike.status === 'rented' ? 'CURRENTLY RENTED' :
+                    bike.status === 'maintenance' ? 'UNDER MAINTENANCE' : '';
+
+                // Use image if available, else standard icon fallback
+                const imageHtml = bike.image
+                    ? `<img src="${bike.image}" alt="${bike.name}" style="width:100%; height:100%; object-fit:cover;">`
+                    : `<i class="${getBikeIcon(bike.type)} bike-icon"></i>`;
+
+                // Calculate features/specs HTML
+                let specsHtml = '';
+                if (bike.features && Array.isArray(bike.features)) {
+                    bike.features.slice(0, 4).forEach(feature => {
+                        specsHtml += `<div class="spec-item"><i class="fas fa-check"></i> <span>${feature}</span></div>`;
+                    });
+                } else if (bike.specs) { // Fallback for old data structure
+                    Object.entries(bike.specs).slice(0, 4).forEach(([key, value]) => {
+                        specsHtml += `<div class="spec-item"><i class="fas fa-bolt"></i> <span>${key}: ${value}</span></div>`;
+                    });
+                }
+
+                // Status badge HTML for unavailable bikes
+                const statusBadgeHtml = !isAvailable ?
+                    `<div class="bike-status-badge">${statusLabel}</div>` : '';
+
+                card.innerHTML = `
+                    <div class="bike-image-container" onclick="openBikeDetails('${bike.id}')" style="cursor:pointer;">
+                        ${imageHtml}
+                        ${statusBadgeHtml}
+                    </div>
+                    <div class="bike-content">
+                        <div class="bike-header">
+                            <h3 class="bike-title">${bike.name}</h3>
+                            <div class="bike-price">AED ${bike.price}<span>/DAY</span></div>
+                        </div>
+                        <div class="bike-specs">
+                            ${specsHtml}
+                        </div>
+                        <button class="select-btn ${!isAvailable ? 'btn-disabled' : ''}" 
+                                onclick="${isAvailable ? `openBikeDetails('${bike.id}')` : 'showUnavailableMessage()'}"
+                                ${!isAvailable ? 'style="opacity: 0.5; cursor: not-allowed; background: #333; border-color: #333; color: #666;"' : ''}>
+                            ${isAvailable ? 'VIEW DETAILS & RENT' : statusLabel}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showUnavailableMessage() {
+            alert('This bike is currently not available for rent. Please check back later or choose another bike.');
+        }
+
+        function getBikeIcon(type) {
+            switch (type) {
+                case 'mountain': return 'fas fa-mountain';
+                case 'electric': return 'fas fa-bolt';
+                case 'road': return 'fas fa-road';
+                default: return 'fas fa-bicycle';
+            }
+        }
+
+        function setupFilters() {
+            const buttons = document.querySelectorAll('.filter-tag');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderBikes();
+                });
+            });
+        }
+
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            input.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderBikes();
+            });
+        }
+
+        // --- Modal & Selection Logic ---
+
+        let currentImageIndex = 0;
+
+        function setupModal() {
+            // Check if modal exists, if not create it
+            if (!document.getElementById('bikeDetailModal')) {
+                const modalHtml = `
+                <div id="bikeDetailModal" class="bike-detail-modal">
+                    <div class="modal-backdrop"></div>
+                    <button class="modal-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <div class="modal-content-wrapper">
+                        <div class="detail-split">
+                            <div class="detail-visuals">
+                                <div class="main-display">
+                                    <button class="main-nav prev-main" onclick="navigateMedia(-1)"><i class="fas fa-chevron-left"></i></button>
+                                    <div id="mediaContent"><!-- Dynamic Media --></div>
+                                    <button class="main-nav next-main" onclick="navigateMedia(1)"><i class="fas fa-chevron-right"></i></button>
+                                    <div class="media-counter" id="mediaCounter">1 / 1</div>
+                                    <div class="zoom-hint"><i class="fas fa-search-plus"></i> Tap image to zoom</div>
+                                </div>
+                                <div class="thumbnails-wrapper">
+                                    <button class="slider-nav prev" onclick="scrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
+                                    <div class="thumbnails" id="thumbnailsContainer">
+                                        <!-- Dynamic Thumbnails -->
+                                    </div>
+                                    <button class="slider-nav next" onclick="scrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <div class="detail-gradient"></div>
+                                <div class="visual-badges">
+                                    <div class="v-badge badge-premium">PREMIUM</div>
+                                    <div class="v-badge badge-check"><i class="fas fa-check-circle"></i> AVAILABLE</div>
+                                </div>
+                            </div>
+
+                            <div class="detail-info-panel">
+                                <div class="detail-header">
+                                    <h2 class="detail-title" id="modalBikeName">LOADING...</h2>
+                                    <div class="detail-price-box">
+                                        <span class="detail-price" id="modalBikePrice">AED 0</span>
+                                        <span class="period">/day</span>
+                                    </div>
+                                </div>
+
+                                <p class="detail-desc" id="modalBikeDesc">Loading description...</p>
+
+                                <div class="detail-stats-grid">
+                                    <!-- HP -->
+                                    <div class="stat-card">
+                                        <div class="stat-icon"><i class="fas fa-horse-head"></i></div>
+                                        <div class="stat-data">
+                                            <span class="stat-value" id="stat-hp">0</span>
+                                            <span class="stat-label">Horsepower</span>
+                                        </div>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-hp"></div></div>
+                                    </div>
+
+                                    <!-- Speed -->
+                                    <div class="stat-card">
+                                        <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                        <div class="stat-data">
+                                            <span class="stat-value" id="stat-speed">0</span>
+                                            <span class="stat-label">Top Speed (km/h)</span>
+                                        </div>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-speed"></div></div>
+                                    </div>
+
+                                    <!-- Engine -->
+                                    <div class="stat-card">
+                                        <div class="stat-icon"><i class="fas fa-cogs"></i></div>
+                                        <div class="stat-data">
+                                            <span class="stat-value" id="stat-engine">0</span>
+                                            <span class="stat-label">Engine (cc)</span>
+                                        </div>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-engine"></div></div>
+                                    </div>
+
+                                    <!-- 0-100 -->
+                                    <div class="stat-card">
+                                        <div class="stat-icon"><i class="fas fa-stopwatch"></i></div>
+                                        <div class="stat-data">
+                                            <span class="stat-value" id="stat-accel">0</span>
+                                            <span class="stat-label">0-100 km/h (s)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Mileage -->
+                                    <div class="stat-card">
+                                            <div class="stat-icon"><i class="fas fa-road"></i></div>
+                                            <div class="stat-data">
+                                                <span class="stat-value" id="stat-kms">0</span>
+                                                <span class="stat-label">Odometer (km)</span>
+                                            </div>
+                                        </div>
+                                </div>
+
+                                <button class="rent-now-btn-large" id="modalRentBtn">
+                                    <span class="btn-text">RENT THIS BEAST</span>
+                                    <div class="btn-glitch"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    /* GEN Z Modal Styles */
+                    .bike-detail-modal { position: fixed; inset: 0; z-index: 999999; display: none; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+                    .bike-detail-modal.active { opacity: 1; pointer-events: auto; display: flex !important; }
+                    .modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+                    .modal-close-btn { position: absolute; top: 30px; right: 30px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); color: white; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; z-index: 1000001; font-size: 1.5rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+                    .modal-close-btn:hover { background: #FF0033; border-color: #FF0033; transform: rotate(90deg); }
+                    .modal-content-wrapper { position: relative; width: 95%; max-width: 1300px; height: 90vh; background: #0a0a0a; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 50px 100px rgba(0,0,0,0.5); transform: translateY(50px) scale(0.95); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+                    .bike-detail-modal.active .modal-content-wrapper { transform: translateY(0) scale(1); }
+                    .detail-split { display: grid; grid-template-columns: 1.3fr 1fr; height: 100%; }
+                    @media (max-width: 968px) { .detail-split { grid-template-columns: 1fr; grid-template-rows: 45% 55%; } }
+                    
+                    /* Visual Side */
+                    .detail-visuals { position: relative; background: #000; overflow: hidden; display: flex; flex-direction: column; }
+                    .main-display { flex: 1; position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); overflow: hidden; touch-action: pan-y pinch-zoom; }
+                    #mediaContent { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
+                    #mediaContent.swiping { transition: none; }
+                    .main-display img { max-width: 100%; max-height: 100%; object-fit: contain; z-index: 10; padding: 10px; cursor: grab; user-select: none; -webkit-user-drag: none; transition: transform 0.3s ease; }
+                    .main-display img.zoomed { object-fit: cover; width: 100%; height: 100%; cursor: zoom-out; }
+                    .main-display video { width: 100%; height: 100%; object-fit: contain; z-index: 10; }
+                    .main-display iframe { z-index: 10; position: relative; }
+                    .main-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: rgba(255,0,51,0.7); border: none; border-radius: 50%; color: #fff; cursor: pointer; z-index: 30; display: flex; align-items: center; justify-content: center; transition: all 0.3s; opacity: 0.7; }
+                    .main-nav:hover { background: #FF0033; opacity: 1; transform: translateY(-50%) scale(1.1); }
+                    .main-nav.prev-main { left: 15px; }
+                    .main-nav.next-main { right: 15px; }
+                    .main-nav i { font-size: 20px; }
+                    .media-counter { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #fff; z-index: 30; }
+                    .zoom-hint { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: 15px; font-size: 0.75rem; color: #888; z-index: 30; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+                    .main-display:hover .zoom-hint { opacity: 1; }
+                    @media (max-width: 768px) { .main-nav { width: 40px; height: 40px; } .main-nav.prev-main { left: 8px; } .main-nav.next-main { right: 8px; } .main-nav i { font-size: 16px; } }
+                    
+                    .thumbnails-wrapper { position: relative; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,255,255,0.1); z-index: 20; }
+                    .thumbnails { height: 90px; display: flex; gap: 10px; padding: 15px 50px; overflow-x: auto; scroll-behavior: smooth; }
+                    .thumbnails::-webkit-scrollbar { height: 4px; }
+                    .thumbnails::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+                    .thumbnails::-webkit-scrollbar-thumb { background: #FF0033; border-radius: 2px; }
+                    .thumb { height: 60px; min-width: 80px; width: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.5; transition: all 0.3s ease; border: 2px solid transparent; flex-shrink: 0; }
+                    .thumb:hover { opacity: 0.8; transform: scale(1.05); }
+                    .thumb.active { opacity: 1; border-color: #FF0033; box-shadow: 0 0 15px rgba(255,0,51,0.5); transform: scale(1.1); }
+                    .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 35px; height: 35px; background: rgba(255,0,51,0.8); border: none; border-radius: 50%; color: #fff; cursor: pointer; z-index: 25; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+                    .slider-nav:hover { background: #FF0033; transform: translateY(-50%) scale(1.1); }
+                    .slider-nav.prev { left: 8px; }
+                    .slider-nav.next { right: 8px; }
+                    .slider-nav i { font-size: 14px; }
+                    .no-thumbs .thumbnails-wrapper { display: none; }
+
+                    .detail-gradient { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(10,10,10,1) 100%); pointer-events: none; z-index: 5; }
+                    @media (max-width: 968px) { .detail-gradient { background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(10,10,10,1) 100%); } }
+                    .visual-badges { position: absolute; top: 30px; left: 30px; display: flex; gap: 15px; z-index: 30; }
+                    .v-badge { padding: 8px 16px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: #fff; letter-spacing: 1px; }
+                    .badge-premium { background: rgba(255, 0, 51, 0.2); border-color: #FF0033; color: #FF0033; }
+
+                    /* Info Side */
+                    .detail-info-panel { padding: 50px; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 20; }
+                    .detail-header { margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+                    .detail-title { font-family: 'Orbitron', sans-serif; font-size: 2.8rem; color: #fff; margin-bottom: 10px; text-transform: uppercase; line-height: 1.1; }
+                    .detail-price-box { font-family: 'Orbitron', sans-serif; }
+                    .detail-price { font-size: 2.2rem; color: #FF0033; font-weight: 700; }
+                    .period { font-size: 1rem; color: #888; }
+                    .detail-desc { color: #aaa; line-height: 1.6; margin-bottom: 35px; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; }
+
+                    /* Stats Grid */
+                    .detail-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 35px; }
+                    .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; position: relative; overflow: hidden; transition: transform 0.3s ease; }
+                    .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.05); border-color: rgba(255,0,51,0.3); }
+                    .stat-icon { font-size: 1.2rem; color: #FF0033; margin-bottom: 8px; }
+                    .stat-value { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: #fff; font-weight: 700; }
+                    .stat-label { display: block; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+                    .stat-bar-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.1); }
+                    .stat-bar-fill { height: 100%; background: #FF0033; width: 0%; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 0 10px rgba(255,0,51,0.5); }
+
+                    /* Rent Button */
+                    .rent-now-btn-large { margin-top: auto; background: #FF0033; color: white; border: none; padding: 22px; font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; border-radius: 8px; position: relative; overflow: hidden; transition: all 0.3s ease; width: 100%; }
+                    .rent-now-btn-large:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(255, 0, 51, 0.5); }
+                    
+                    @media(max-width: 480px) {
+                        .detail-info-panel { padding: 25px; }
+                        .detail-title { font-size: 1.8rem; }
+                        .stat-value { font-size: 1.2rem; }
+                        .rent-now-btn-large { font-size: 1.1rem; padding: 18px; }
+                    }
+                </style>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                // Close handler
+                const closeModal = () => {
+                    const modal = document.getElementById('bikeDetailModal');
+                    modal.classList.remove('active');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        document.getElementById('mediaContent').innerHTML = '';
+                    }, 400);
+                    document.body.style.overflow = 'auto'; // unlock scroll
+                };
+
+                document.querySelector('.modal-close-btn').addEventListener('click', closeModal);
+                document.querySelector('.modal-backdrop').addEventListener('click', closeModal);
+            }
+        }
+
+        // Helper for animations
+        function animateCounter(id, target, isFloat = false) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerText = '0';
+            if (!target || target === 0 || target === 'N/A') { el.innerText = 'N/A'; return; }
+
+            const duration = 1000;
+            const start = performance.now();
+            const startVal = 0;
+
+            function update(time) {
+                let timeFraction = (time - start) / duration;
+                if (timeFraction > 1) timeFraction = 1;
+
+                const value = startVal + (target - startVal) * (1 - Math.pow(2, -10 * timeFraction)); // easeOutExpo
+
+                el.innerText = isFloat ? value.toFixed(1) : Math.floor(value);
+
+                if (timeFraction < 1) requestAnimationFrame(update);
+                else el.innerText = isFloat ? target.toFixed(1) : target;
+            }
+            requestAnimationFrame(update);
+        }
+
+        function updateProgressBar(id, percent) {
+            const bar = document.getElementById(id);
+            if (bar) {
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = `${Math.min(percent, 100)}%`; }, 100);
+            }
+        }
+
+        window.openBikeDetails = function (id) {
+            currentModalBike = allBikes.find(b => b.id === id);
+            if (!currentModalBike) return;
+
+            const modal = document.getElementById('bikeDetailModal');
+
+            // Check availability
+            const isAvailable = !currentModalBike.status || currentModalBike.status === 'available';
+            const statusLabel = currentModalBike.status === 'rented' ? 'CURRENTLY RENTED' :
+                currentModalBike.status === 'maintenance' ? 'UNDER MAINTENANCE' : 'AVAILABLE';
+
+            // Text Details
+            document.getElementById('modalBikeName').textContent = currentModalBike.name;
+            document.getElementById('modalBikePrice').textContent = `AED ${currentModalBike.price}`;
+            document.getElementById('modalBikeDesc').textContent = currentModalBike.description || 'No description available for this beauty.';
+
+            // Update availability badge in modal
+            const badgeCheck = document.querySelector('.badge-check');
+            if (badgeCheck) {
+                if (isAvailable) {
+                    badgeCheck.innerHTML = '<i class="fas fa-check-circle"></i> AVAILABLE';
+                    badgeCheck.style.background = 'rgba(76, 175, 80, 0.2)';
+                    badgeCheck.style.borderColor = '#4CAF50';
+                    badgeCheck.style.color = '#4CAF50';
+                } else {
+                    badgeCheck.innerHTML = `<i class="fas fa-times-circle"></i> ${statusLabel}`;
+                    badgeCheck.style.background = 'rgba(255, 0, 51, 0.2)';
+                    badgeCheck.style.borderColor = '#FF0033';
+                    badgeCheck.style.color = '#FF0033';
+                }
+            }
+
+            // Stats Population
+            animateCounter('stat-hp', currentModalBike.hp || 0);
+            animateCounter('stat-speed', currentModalBike.topSpeed || 0);
+            animateCounter('stat-engine', currentModalBike.engine || 0);
+            animateCounter('stat-accel', currentModalBike.acceleration || 0, true);
+            animateCounter('stat-kms', currentModalBike.mileage || 0);
+
+            // Progress Bar Logic (Max values assumption: HP=250, Speed=350, Engine=1300)
+            updateProgressBar('bar-hp', (currentModalBike.hp || 0) / 250 * 100);
+            updateProgressBar('bar-speed', (currentModalBike.topSpeed || 0) / 350 * 100);
+            updateProgressBar('bar-engine', (currentModalBike.engine || 0) / 1300 * 100);
+
+            // Media & Thumbnails
+            updateMediaGallery();
+
+            // Rent Button - disable if not available
+            const rentBtn = document.getElementById('modalRentBtn');
+            if (rentBtn) {
+                if (isAvailable) {
+                    rentBtn.onclick = () => selectBike(id);
+                    rentBtn.innerHTML = '<span class="btn-text">RENT THIS BEAST</span><div class="btn-glitch"></div>';
+                    rentBtn.style.background = '#FF0033';
+                    rentBtn.style.cursor = 'pointer';
+                    rentBtn.style.opacity = '1';
+                } else {
+                    rentBtn.onclick = () => showUnavailableMessage();
+                    rentBtn.innerHTML = `<span class="btn-text">${statusLabel}</span>`;
+                    rentBtn.style.background = '#333';
+                    rentBtn.style.cursor = 'not-allowed';
+                    rentBtn.style.opacity = '0.6';
+                }
+            }
+
+            // Show Modal
+            modal.style.display = 'flex';
+            // Slight delay to allow display:flex to apply before adding active class for transition
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+            });
+            document.body.style.overflow = 'hidden';
+        };
+
+        // Store current media for navigation
+        let currentMedia = [];
+        let currentMediaIndex = 0;
+
+        function updateMediaGallery() {
+            const mainDisplay = document.querySelector('.main-display');
+            const thumbsContainer = document.querySelector('.thumbnails');
+            const thumbsWrapper = document.querySelector('.thumbnails-wrapper');
+
+            // Debug: Log bike data
+            console.log('🖼️ Bike media data:', {
+                image: currentModalBike.image,
+                additionalImages: currentModalBike.additionalImages,
+                videoUrl: currentModalBike.videoUrl
+            });
+
+            // Collect all media: Main image, Additional Images, Video
+            currentMedia = [];
+
+            if (currentModalBike.image) currentMedia.push({ type: 'image', src: currentModalBike.image });
+            if (currentModalBike.additionalImages && Array.isArray(currentModalBike.additionalImages)) {
+                currentModalBike.additionalImages.forEach(img => {
+                    if (img && img.trim()) currentMedia.push({ type: 'image', src: img });
+                });
+            }
+            if (currentModalBike.videoUrl && currentModalBike.videoUrl.trim()) {
+                currentMedia.push({ type: 'video', src: currentModalBike.videoUrl });
+            }
+
+            console.log('🖼️ Total media items:', currentMedia.length, currentMedia);
+
+            // If no media, use placeholder
+            if (currentMedia.length === 0) {
+                currentMedia.push({ type: 'image', src: 'https://via.placeholder.com/600x400?text=No+Preview' });
+            }
+
+            // Show/hide thumbnails based on media count
+            if (!thumbsWrapper || !thumbsContainer) {
+                console.error('❌ Thumbnails elements not found!', { thumbsWrapper, thumbsContainer });
+                return;
+            }
+
+            if (currentMedia.length <= 1) {
+                thumbsWrapper.style.display = 'none';
+                console.log('🖼️ Hiding thumbnails (only 1 item)');
+            } else {
+                thumbsWrapper.style.display = 'block';
+                console.log('🖼️ Showing thumbnails for', currentMedia.length, 'items');
+            }
+
+            // Render Thumbnails
+            thumbsContainer.innerHTML = '';
+            currentMedia.forEach((item, index) => {
+                const thumb = document.createElement('img');
+                thumb.className = `thumb ${index === 0 ? 'active' : ''}`;
+                thumb.dataset.index = index;
+                // For video thumb, use a video icon
+                if (item.type === 'video') {
+                    thumb.src = 'https://img.icons8.com/ios-filled/100/FF0033/video.png';
+                    thumb.style.padding = '10px';
+                    thumb.style.background = 'rgba(255,0,51,0.1)';
+                } else {
+                    thumb.src = item.src;
+                }
+                thumb.onclick = () => {
+                    currentMediaIndex = index;
+                    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                    showMedia(item);
+                };
+                thumbsContainer.appendChild(thumb);
+            });
+
+            // Show first item
+            currentMediaIndex = 0;
+            showMedia(currentMedia[0]);
+        }
+
+        function scrollThumbnails(direction) {
+            const container = document.querySelector('.thumbnails');
+            const scrollAmount = 200;
+            container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+        function navigateMedia(direction) {
+            currentMediaIndex += direction;
+            if (currentMediaIndex < 0) currentMediaIndex = currentMedia.length - 1;
+            if (currentMediaIndex >= currentMedia.length) currentMediaIndex = 0;
+
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.thumb[data-index="${currentMediaIndex}"]`)?.classList.add('active');
+            showMedia(currentMedia[currentMediaIndex]);
+        }
+
+        function showMedia(item) {
+            const mediaContent = document.getElementById('mediaContent');
+            const mediaCounter = document.getElementById('mediaCounter');
+            const mainNavs = document.querySelectorAll('.main-nav');
+
+            // Update counter
+            mediaCounter.textContent = `${currentMediaIndex + 1} / ${currentMedia.length}`;
+
+            // Always show navigation arrows (user requested)
+            mainNavs.forEach(nav => {
+                nav.style.display = 'flex';
+            });
+            mediaCounter.style.display = 'block';
+
+            if (item.type === 'video') {
+                // Check if YouTube
+                if (item.src.includes('youtube.com') || item.src.includes('youtu.be')) {
+                    // Extract ID (simple regex)
+                    let videoId = '';
+                    const match = item.src.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|v\/)([^&]+)/);
+                    if (match) videoId = match[1];
+                    mediaContent.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;"></iframe>`;
+                } else {
+                    // HTML5 Video
+                    mediaContent.innerHTML = `<video controls autoplay style="width:100%; height:100%; object-fit:contain;"><source src="${item.src}" type="video/mp4">Your browser does not support the video tag.</video>`;
+                }
+            } else {
+                mediaContent.innerHTML = `<img src="${item.src}" alt="Bike Preview" onclick="toggleImageZoom(this)" draggable="false">`;
+                // Initialize swipe after image loads
+                initSwipeGestures();
+            }
+        }
+
+        // Toggle zoom on image click
+        function toggleImageZoom(img) {
+            img.classList.toggle('zoomed');
+        }
+
+        // Swipe gesture support for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let isSwiping = false;
+
+        function initSwipeGestures() {
+            const mediaContent = document.getElementById('mediaContent');
+            const mainDisplay = document.querySelector('.main-display');
+
+            // Remove old listeners
+            mainDisplay.removeEventListener('touchstart', handleTouchStart);
+            mainDisplay.removeEventListener('touchmove', handleTouchMove);
+            mainDisplay.removeEventListener('touchend', handleTouchEnd);
+
+            // Add new listeners
+            mainDisplay.addEventListener('touchstart', handleTouchStart, { passive: true });
+            mainDisplay.addEventListener('touchmove', handleTouchMove, { passive: false });
+            mainDisplay.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isSwiping = false;
+            document.getElementById('mediaContent').classList.add('swiping');
+        }
+
+        function handleTouchMove(e) {
+            touchEndX = e.touches[0].clientX;
+            const diffX = touchEndX - touchStartX;
+            const diffY = Math.abs(e.touches[0].clientY - touchStartY);
+
+            // Only swipe if horizontal movement is greater than vertical
+            if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+                isSwiping = true;
+                e.preventDefault();
+                // Visual feedback during swipe
+                const mediaContent = document.getElementById('mediaContent');
+                mediaContent.style.transform = `translateX(${diffX * 0.3}px)`;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            const mediaContent = document.getElementById('mediaContent');
+            mediaContent.classList.remove('swiping');
+            mediaContent.style.transform = '';
+
+            if (!isSwiping) return;
+
+            const diffX = touchEndX - touchStartX;
+            const threshold = 50; // Minimum swipe distance
+
+            if (Math.abs(diffX) > threshold) {
+                if (diffX > 0) {
+                    // Swipe right - previous
+                    navigateMedia(-1);
+                } else {
+                    // Swipe left - next
+                    navigateMedia(1);
+                }
+            }
+
+            touchStartX = 0;
+            touchEndX = 0;
+            isSwiping = false;
+        }
+
+        function selectBike(id) {
+            const bike = allBikes.find(b => b.id === id);
+
+            // Safety check: prevent renting unavailable bikes
+            if (bike && bike.status && bike.status !== 'available') {
+                alert('Sorry, this bike is currently not available for rent.');
+                return;
+            }
+
+            localStorage.setItem('selectedBike', JSON.stringify(bike));
+            // Redirect to duration selection page
+            window.location.href = `duration-selection.html?bikeId=${id}`;
+        }
+    </script>
+    </script>
+</body>
+
+</html>

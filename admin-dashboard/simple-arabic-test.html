@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Arabic Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-secondary { background: #6c757d; color: white; border: none; }
+        .card { border: 1px solid #ddd; padding: 20px; margin: 10px 0; }
+        .rtl { direction: rtl; text-align: right; }
+        .sidebar { 
+            width: 250px; 
+            height: 100vh; 
+            background: #333; 
+            color: white; 
+            padding: 20px; 
+            position: fixed; 
+            left: 0; 
+            top: 0;
+        }
+        .main-content { 
+            margin-left: 270px; 
+            padding: 20px; 
+        }
+        .rtl .sidebar {
+            left: 0; /* Keep sidebar on left even in RTL */
+        }
+        .rtl .main-content {
+            margin-left: 270px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h3>Menu</h3>
+        <nav>
+            <div><span data-en="Dashboard" data-ar="لوحة التحكم">Dashboard</span></div>
+            <div><span data-en="Bikes" data-ar="الدراجات">Bikes</span></div>
+            <div><span data-en="Users" data-ar="المستخدمون">Users</span></div>
+            <div><span data-en="Settings" data-ar="الإعدادات">Settings</span></div>
+        </nav>
+    </div>
+    
+    <div class="main-content">
+        <h1 data-en="Dashboard Overview" data-ar="نظرة عامة على لوحة التحكم">Dashboard Overview</h1>
+        <p data-en="Welcome to First Season Moto" data-ar="مرحباً بك في موسم الأول للدراجات">Welcome to First Season Moto</p>
+        
+        <div class="card">
+            <h3 data-en="Statistics" data-ar="الإحصائيات">Statistics</h3>
+            <div data-en="Total Users: 123" data-ar="إجمالي المستخدمين: 123">Total Users: 123</div>
+            <div data-en="Total Bikes: 45" data-ar="إجمالي الدراجات: 45">Total Bikes: 45</div>
+            <div data-en="Total Bookings: 89" data-ar="إجمالي الحجوزات: 89">Total Bookings: 89</div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="switchToEnglish()" class="btn btn-primary">English</button>
+            <button onclick="switchToArabic()" class="btn btn-secondary">العربية</button>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+        
+        function switchToEnglish() {
+            currentLang = 'en';
+            document.body.classList.remove('rtl');
+            document.documentElement.dir = 'ltr';
+            document.documentElement.lang = 'en';
+            translatePage();
+            updateStatus('Switched to English');
+        }
+        
+        function switchToArabic() {
+            currentLang = 'ar';
+            document.body.classList.add('rtl');
+            document.documentElement.dir = 'rtl';
+            document.documentElement.lang = 'ar';
+            translatePage();
+            updateStatus('Switched to Arabic');
+        }
+        
+        function translatePage() {
+            // Find all elements with translation attributes
+            const elements = document.querySelectorAll('[data-en][data-ar]');
+            
+            elements.forEach(element => {
+                const translation = element.getAttribute(`data-${currentLang}`);
+                if (translation) {
+                    element.textContent = translation;
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('language', currentLang);
+            
+            // Save to Firebase if available
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                try {
+                    firebase.firestore().collection('settings').doc('app').set({
+                        language: currentLang,
+                        updatedAt: new Date()
+                    }, { merge: true });
+                    console.log('Language saved to Firebase:', currentLang);
+                } catch (error) {
+                    console.log('Firebase not available, using localStorage only');
+                }
+            }
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<div style="background: #d4edda; padding: 10px; margin: 10px 0; border-radius: 4px;">✅ ${message}</div>`;
+            setTimeout(() => {
+                document.getElementById('status').innerHTML = '';
+            }, 3000);
+        }
+        
+        // Load language on page load
+        window.addEventListener('load', () => {
+            // Try to load from Firebase first, then localStorage
+            const savedLang = localStorage.getItem('language') || 'en';
+            
+            if (savedLang === 'ar') {
+                switchToArabic();
+            } else {
+                switchToEnglish();
+            }
+            
+            updateStatus('Page loaded with language: ' + savedLang);
+        });
+    </script>
+</body>
+</html>

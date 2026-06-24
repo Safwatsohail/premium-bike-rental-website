@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessories - Four Season Moto | Gear & Equipment Rental</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Rent helmets, gloves, and safety gear for your off-road adventure in Dubai. Four Season Moto provides quality accessories for bike and ATV rentals.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#FF0033">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+    <script src="js/firebase-preloader.js"></script>
+    <script src="js/mobile-performance.js"></script>
+    <script src="js/mobile-buttery-smooth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background-color: #000000;
+            background-image:
+                radial-gradient(circle at center, transparent 10%, #000000 100%),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(27deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(207deg, #0a0a0a 2.5px, transparent 2.5px),
+                linear-gradient(90deg, #050505 5px, transparent 5px),
+                linear-gradient(#0a0a0a 25%, #030303 25%, #030303 50%, transparent 50%, transparent 75%, #0d0d0d 75%, #0d0d0d);
+            background-position: center center, 0 2.5px, 5px 0px, 0px 5px, 5px 2.5px, 0 0, 0 0;
+            background-size: 100% 100%, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px, 10px 10px;
+            background-attachment: fixed, scroll, scroll, scroll, scroll, scroll, scroll;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 45%, #FF0033 50%, transparent 55%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 4s infinite linear;
+            opacity: 0.5;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 60px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.completed {
+            opacity: 1;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 5px #000;
+        }
+
+        .step.active .step-dot {
+            background: #FF0033;
+            border-color: #FF0033;
+            box-shadow: 0 0 0 5px #000, 0 0 15px rgba(255, 0, 51, 0.5);
+        }
+
+        .step.completed .step-dot {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 5px #000, 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .step-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Layout Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Accessories Grid */
+        .accessories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 35px;
+            perspective: 1000px;
+        }
+
+        .accessory-card {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.85) 0%, rgba(5, 5, 5, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 2px 8px rgba(255, 0, 51, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform-style: preserve-3d;
+        }
+
+        .accessory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 0, 51, 0.03) 0%, transparent 50%, rgba(255, 255, 255, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .accessory-card:hover {
+            transform: translateY(-12px) rotateX(2deg) scale(1.02);
+            border-color: rgba(255, 0, 51, 0.5);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.7),
+                0 8px 24px rgba(255, 0, 51, 0.3),
+                0 0 40px rgba(255, 0, 51, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .accessory-card:hover::before {
+            opacity: 1;
+        }
+
+        .accessory-card.selected {
+            border-color: rgba(255, 0, 51, 0.6);
+            background: linear-gradient(135deg, rgba(255, 0, 51, 0.08) 0%, rgba(10, 10, 10, 0.95) 100%);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.6),
+                0 4px 16px rgba(255, 0, 51, 0.4),
+                0 0 30px rgba(255, 0, 51, 0.25),
+                inset 0 1px 0 rgba(255, 0, 51, 0.2);
+        }
+
+        .accessory-image-wrapper {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .accessory-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .accessory-card:hover .accessory-image-wrapper img {
+            transform: scale(1.08);
+        }
+
+        .accessory-content-wrapper {
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .accessory-icon {
+            font-size: 3rem;
+            color: #666;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .accessory-card:hover .accessory-icon {
+            color: #fff;
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(255, 255, 255, 0.4));
+        }
+
+        .accessory-card.selected .accessory-icon {
+            color: #FF0033;
+            filter: drop-shadow(0 8px 20px rgba(255, 0, 51, 0.6));
+        }
+
+        .accessory-info h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .accessory-price {
+            font-family: 'Orbitron', monospace;
+            color: #FF0033;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 8px rgba(255, 0, 51, 0.5);
+        }
+
+        .accessory-desc {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Quantity Controls */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .qty-btn {
+            width: 35px;
+            height: 35px;
+            background: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: #333;
+            color: #FF0033;
+        }
+
+        .qty-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 40px;
+            opacity: 0;
+            animation: fadeInRight 0.8s ease-out 0.4s forwards;
+        }
+
+        .cart-header {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-items {
+            margin-bottom: 25px;
+            min-height: 100px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        .cart-item-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item-name i {
+            color: #FF0033;
+            font-size: 0.8rem;
+        }
+
+        .cart-total {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-family: 'Orbitron', monospace;
+            color: #888;
+        }
+
+        .total-amount {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            color: #FF0033;
+            font-weight: 900;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: transparent;
+            border: 2px solid #FF0033;
+            color: #FF0033;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.1);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #FF0033;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+            transform: skewX(-20deg);
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            box-shadow: 0 0 40px rgba(255, 0, 51, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            transform: skewX(-20deg) translateX(100%);
+            left: 0;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #333;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            border-color: #fff;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .accessories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: static;
+                margin-top: 40px;
+                order: 2;
+            }
+
+            .accessories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 20px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 15px;
+            }
+
+            .page-header {
+                margin-bottom: 40px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
+            }
+
+            .page-subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+            }
+
+            /* Progress Steps - Compact */
+            .progress-container {
+                margin-bottom: 40px;
+                padding: 0 10px;
+            }
+
+            .steps {
+                max-width: 100%;
+            }
+
+            .step-label {
+                font-size: 0.65rem;
+                letter-spacing: 0.5px;
+            }
+
+            .step-dot {
+                width: 10px;
+                height: 10px;
+                box-shadow: 0 0 0 4px #000;
+            }
+
+            .step.active .step-dot {
+                box-shadow: 0 0 0 4px #000, 0 0 12px rgba(255, 0, 51, 0.5);
+            }
+
+            .step.completed .step-dot {
+                box-shadow: 0 0 0 4px #000, 0 0 8px rgba(76, 175, 80, 0.3);
+            }
+
+            /* Accessories Grid - Single Column on Small Screens */
+            .accessories-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .accessory-card {
+                border-radius: 18px;
+                max-width: 500px;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .accessory-card:hover {
+                transform: translateY(-8px) scale(1.01);
+            }
+
+            .accessory-image-wrapper {
+                height: 180px;
+            }
+
+            .accessory-content-wrapper {
+                padding: 20px;
+            }
+
+            .accessory-icon {
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+            }
+
+            .accessory-info h3 {
+                font-size: 1.1rem;
+            }
+
+            .accessory-price {
+                font-size: 1.1rem;
+            }
+
+            .accessory-desc {
+                font-size: 0.85rem;
+            }
+
+            /* Cart Sidebar */
+            .cart-sidebar {
+                padding: 25px 20px;
+                border-radius: 16px;
+            }
+
+            .cart-header {
+                font-size: 1.3rem;
+                margin-bottom: 20px;
+            }
+
+            .cart-item {
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+            }
+
+            .total-amount {
+                font-size: 1.5rem;
+            }
+
+            /* Buttons */
+            .btn {
+                padding: 14px;
+                font-size: 0.9rem;
+                letter-spacing: 1.5px;
+            }
+
+            .actions {
+                gap: 12px;
+                margin-top: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 12px;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+                -webkit-text-stroke: 1px rgba(255, 255, 255, 0.8);
+            }
+
+            .page-subtitle {
+                font-size: 0.75rem;
+            }
+
+            /* Hide step labels on very small screens */
+            .step-label {
+                display: none;
+            }
+
+            .step {
+                gap: 5px;
+            }
+
+            .progress-container {
+                margin-bottom: 30px;
+            }
+
+            .accessory-card {
+                border-radius: 16px;
+            }
+
+            .accessory-image-wrapper {
+                height: 160px;
+            }
+
+            .accessory-content-wrapper {
+                padding: 18px;
+            }
+
+            .accessory-icon {
+                font-size: 2.2rem;
+            }
+
+            .accessory-info h3 {
+                font-size: 1rem;
+            }
+
+            .accessory-price {
+                font-size: 1rem;
+            }
+
+            .accessory-desc {
+                font-size: 0.8rem;
+                margin-bottom: 15px;
+            }
+
+            .quantity-control {
+                padding: 4px;
+            }
+
+            .qty-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+
+            .qty-value {
+                font-size: 1rem;
+            }
+
+            .cart-sidebar {
+                padding: 20px 15px;
+            }
+
+            .cart-header {
+                font-size: 1.2rem;
+            }
+
+            .cart-item {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+
+            .total-amount {
+                font-size: 1.3rem;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+            }
+
+            .btn i {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .accessory-card {
+                transition: all 0.2s ease;
+            }
+
+            .accessory-card:active {
+                transform: scale(0.98);
+            }
+
+            .qty-btn {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .btn {
+                min-height: 48px;
+            }
+
+            /* Disable hover effects on touch devices */
+            .accessory-card:hover {
+                transform: translateY(0);
+                border-color: rgba(255, 255, 255, 0.08);
+                box-shadow:
+                    0 8px 32px rgba(0, 0, 0, 0.5),
+                    0 2px 8px rgba(255, 0, 51, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            }
+
+            .accessory-card:hover::before {
+                opacity: 0;
+            }
+
+            .accessory-card:hover .accessory-image-wrapper img {
+                transform: scale(1);
+            }
+
+            .accessory-card:hover .accessory-icon {
+                transform: scale(1);
+            }
+
+            /* Active state for touch */
+            .accessory-card.selected {
+                transform: scale(1);
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .accessories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+
+            .accessory-image-wrapper {
+                height: 150px;
+            }
+
+            .page-header {
+                margin-bottom: 30px;
+            }
+
+            .progress-container {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        .loading i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+            color: #FF0033;
+        }
+
+        @media (max-width: 768px) {
+            .loading {
+                padding: 40px 20px;
+                font-size: 0.95rem;
+            }
+
+            .loading i {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title" data-text="GEAR UP">GEAR UP</h1>
+            <div class="page-subtitle">Essential equipment for your journey</div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-container">
+            <div class="progress-line"></div>
+            <div class="steps">
+                <div class="step completed">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step completed">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Selection</div>
+                </div>
+                <div class="step active">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Gear</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Accessories Grid -->
+            <div class="accessories-grid" id="accessoriesContainer">
+                <!-- Items populated by JS -->
+            </div>
+
+            <!-- Cart Sidebar -->
+            <div class="cart-sidebar">
+                <div class="cart-header">
+                    <span>YOUR LOADOUT</span>
+                    <i class="fas fa-shopping-bag" style="color: #FF0033;"></i>
+                </div>
+
+                <div class="cart-items" id="cartItems">
+                    <div style="text-align: center; color: #444; padding: 20px;">
+                        No gear selected
+                    </div>
+                </div>
+
+                <div class="cart-total">
+                    <span class="total-label">TOTAL <span id="rentalDaysLabel"
+                            style="font-size: 0.8rem; color: #666;"></span></span>
+                    <span class="total-amount" id="cartTotal">AED 0.00</span>
+                </div>
+
+                <div class="actions">
+                    <a href="agreement.html" class="btn btn-primary" onclick="saveCart()">
+                        <span>CONTINUE</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="bike-selection.html" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>BACK TO BIKES</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let accessories = [];
+        let cart = {};
+        let currentModalAccessory = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAccessories();
+            loadCart();
+            setupModal();
+        });
+
+        function loadAccessories() {
+            const container = document.getElementById('accessoriesContainer');
+
+            // Check if preloader has data ready (instant)
+            if (window.FSMData && window.FSMData.accessoriesLoaded && window.FSMData.accessories && window.FSMData.accessories.length > 0) {
+                console.log('⚡ Accessories: Using preloaded data instantly');
+                accessories = window.FSMData.accessories;
+                renderAccessories();
+                setTimeout(() => loadCart(), 100);
+                return;
+            }
+
+            // Check localStorage cache directly for instant load
+            try {
+                const cached = localStorage.getItem('fsm_accessories_cache');
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    if (data && data.length > 0) {
+                        console.log('⚡ Accessories: Using localStorage cache');
+                        accessories = data;
+                        renderAccessories();
+                        setTimeout(() => loadCart(), 100);
+                        return;
+                    }
+                }
+            } catch (e) { }
+
+            // Wait for preloader if available
+            if (window.FSMData) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-circle-notch fa-spin"></i><br>LOADING GEAR...</div>';
+                window.FSMData.getAccessories(function (data) {
+                    console.log('✅ Accessories: Data received from preloader');
+                    accessories = data || [];
+                    renderAccessories();
+                    setTimeout(() => loadCart(), 100);
+                });
+                return;
+            }
+
+            // Fallback: Direct Firebase fetch
+            console.log('⚠️ Accessories: Direct Firebase fetch');
+            container.innerHTML = '<div class="loading"><i class="fas fa-circle-notch fa-spin"></i><br>LOADING GEAR...</div>';
+
+            waitForDB(function (db) {
+                db.collection('accessories').get()
+                    .then(snapshot => {
+                        accessories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderAccessories();
+                        setTimeout(() => loadCart(), 100);
+                    })
+                    .catch(error => {
+                        console.error("Error loading accessories:", error);
+                        container.innerHTML = '<div class="loading">ERROR LOADING GEAR. PLEASE REFRESH.</div>';
+                    });
+            });
+        }
+
+        function waitForDB(callback) {
+            if (window.db) {
+                callback(window.db);
+            } else {
+                setTimeout(function () { waitForDB(callback); }, 50);
+            }
+        }
+
+        function renderAccessories() {
+            const container = document.getElementById('accessoriesContainer');
+            container.innerHTML = '';
+
+            accessories.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'accessory-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.id = `card-${item.id}`;
+
+                let contentHtml = '';
+
+                if (item.imageUrl) {
+                    // Card with image
+                    contentHtml = `
+                        <div class="accessory-image-wrapper" onclick="openAccessoryDetails('${item.id}')" style="cursor:pointer;">
+                            <img src="${item.imageUrl}" alt="${item.name}">
+                        </div>
+                        <div class="accessory-content-wrapper">
+                            <div class="accessory-info">
+                                <h3>${item.name}</h3>
+                                <div class="accessory-price">AED ${item.price}</div>
+                                <p class="accessory-desc">${item.description}</p>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                                <span class="qty-value" id="qty-${item.id}">0</span>
+                                <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+                            </div>
+                            <div style="text-align:center; margin-top:15px;">
+                                <button class="btn-secondary" onclick="openAccessoryDetails('${item.id}')" style="width:100%; padding:10px; font-size:0.85rem; border-radius:10px;">VIEW DETAILS</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Card with icon
+                    contentHtml = `
+                        <div class="accessory-content-wrapper">
+                            <div class="accessory-icon" style="cursor:pointer;" onclick="openAccessoryDetails('${item.id}')">
+                                <i class="${item.icon}"></i>
+                            </div>
+                            <div class="accessory-info">
+                                <h3>${item.name}</h3>
+                                <div class="accessory-price">AED ${item.price}</div>
+                                <p class="accessory-desc">${item.description}</p>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                                <span class="qty-value" id="qty-${item.id}">0</span>
+                                <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+                            </div>
+                            <div style="text-align:center; margin-top:15px;">
+                                <button class="btn-secondary" onclick="openAccessoryDetails('${item.id}')" style="width:100%; padding:10px; font-size:0.85rem; border-radius:10px;">VIEW DETAILS</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = contentHtml;
+                container.appendChild(card);
+            });
+        }
+
+        function updateQty(id, change) {
+            if (!cart[id]) cart[id] = 0;
+            cart[id] += change;
+            if (cart[id] < 0) cart[id] = 0;
+
+            // Update UI
+            const qtyEl = document.getElementById(`qty-${id}`);
+            if (qtyEl) qtyEl.innerText = cart[id];
+
+            const card = document.getElementById(`card-${id}`);
+            if (card) {
+                if (cart[id] > 0) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                    delete cart[id];
+                }
+            }
+
+            updateCartDisplay();
+            saveCart();
+        }
+
+        // Calculate rental days from duration selection or user details
+        function getRentalDays() {
+            // First check if we have duration selection data
+            const selectedDuration = JSON.parse(localStorage.getItem('selectedDuration') || '{}');
+            if (selectedDuration.pricing && selectedDuration.pricing.days) {
+                return selectedDuration.pricing.days;
+            }
+
+            // Fallback to user details for backward compatibility
+            const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+            if (!userDetails.pickupDate || !userDetails.dropoffDate) return 1;
+            const pickup = new Date(userDetails.pickupDate);
+            const dropoff = new Date(userDetails.dropoffDate);
+            const diffTime = Math.abs(dropoff - pickup);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays > 0 ? diffDays : 1;
+        }
+
+        function updateCartDisplay() {
+            const container = document.getElementById('cartItems');
+            const totalEl = document.getElementById('cartTotal');
+            const rentalDaysLabel = document.getElementById('rentalDaysLabel');
+            container.innerHTML = '';
+
+            const rentalDays = getRentalDays();
+
+            // Show rental days in label
+            if (rentalDaysLabel) {
+                rentalDaysLabel.innerText = `(${rentalDays} day${rentalDays > 1 ? 's' : ''})`;
+            }
+
+            let total = 0;
+            const cartIds = Object.keys(cart);
+
+            if (cartIds.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #444; padding: 20px;">No gear selected</div>';
+                totalEl.innerText = 'AED 0.00';
+                return;
+            }
+
+            cartIds.forEach(id => {
+                const item = accessories.find(a => a.id == id);
+                if (!item) return;
+
+                const qty = cart[id];
+                const costPerDay = item.price * qty;
+                const totalCost = costPerDay * rentalDays; // Multiply by rental days
+                total += totalCost;
+
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-name">
+                            <i class="fas fa-check"></i>
+                            <span>${item.name} <span style="color:#666">x${qty}</span></span>
+                        </div>
+                        <span>AED ${totalCost.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            totalEl.innerText = `AED ${total.toFixed(2)}`;
+        }
+
+        function saveCart() {
+            // Save in simple format for this page
+            localStorage.setItem('motoAccessories', JSON.stringify(cart));
+
+            // Also save in the format payment.html expects (accessoriesCart)
+            const accessoriesCartArray = [];
+            Object.keys(cart).forEach(id => {
+                const item = accessories.find(a => a.id == id);
+                if (item && cart[id] > 0) {
+                    accessoriesCartArray.push({
+                        id: item.id,
+                        name: item.name,
+                        price: parseFloat(item.price) || 0,
+                        quantity: cart[id]
+                    });
+                }
+            });
+            localStorage.setItem('accessoriesCart', JSON.stringify(accessoriesCartArray));
+            console.log('✅ Accessories saved:', accessoriesCartArray);
+        }
+
+        function loadCart() {
+            const saved = localStorage.getItem('motoAccessories');
+            if (saved) {
+                cart = JSON.parse(saved);
+                // Update UI based on loaded cart
+                Object.keys(cart).forEach(id => {
+                    const qty = cart[id];
+                    const qtyEl = document.getElementById(`qty-${id}`);
+                    if (qtyEl) qtyEl.innerText = qty;
+
+                    const card = document.getElementById(`card-${id}`);
+                    if (card && qty > 0) card.classList.add('selected');
+                });
+                updateCartDisplay();
+            }
+        }
+
+        // --- Modal Logic ---
+        function setupModal() {
+            if (!document.getElementById('accessoryDetailModal')) {
+                const modalHtml = `
+                <div id="accessoryDetailModal" class="modal-overlay" style="display:none;">
+                    <div class="modal-content">
+                        <button class="close-modal">&times;</button>
+                        <div class="modal-grid">
+                            <div class="modal-media">
+                                <div class="main-display"></div>
+                                <div class="thumbnails"></div>
+                            </div>
+                            <div class="modal-info">
+                                <h2 id="modalAccName">Name</h2>
+                                <div class="modal-price" id="modalAccPrice">AED 0/day</div>
+                                <p id="modalAccDesc">Description...</p>
+                                <div class="modal-control">
+                                    <button class="qty-btn" onclick="updateModalQty(-1)">-</button>
+                                    <span class="qty-value" id="modalQty">0</span>
+                                    <button class="qty-btn" onclick="updateModalQty(1)">+</button>
+                                </div>
+                                <button class="action-btn" onclick="closeModal()">DONE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .modal-overlay {
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: rgba(0,0,0,0.9); z-index: 1000;
+                        display: flex; justify-content: center; align-items: center;
+                        padding: 20px;
+                    }
+                    .modal-content {
+                        background: #111; border: 1px solid #333; border-radius: 20px;
+                        width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto;
+                        position: relative; padding: 30px;
+                    }
+                    .close-modal {
+                        position: absolute; top: 20px; right: 20px;
+                        background: transparent; border: none; color: #fff; font-size: 2rem; cursor: pointer; z-index: 10;
+                    }
+                    .modal-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+                    .main-display {
+                        width: 100%; height: 350px; background: #000; display: flex; align-items: center; justify-content: center;
+                        margin-bottom: 15px; border-radius: 10px; overflow: hidden;
+                    }
+                    .main-display img, .main-display video { width: 100%; height: 100%; object-fit: contain; }
+                    .thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+                    .thumb {
+                        width: 70px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer; opacity: 0.6; transition: 0.3s;
+                        border: 2px solid transparent;
+                    }
+                    .thumb.active { opacity: 1; border-color: #FF0033; }
+                    .modal-info h2 { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 10px; color: #fff; }
+                    .modal-price { color: #FF0033; font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; }
+                    #modalAccDesc { color: #ccc; margin-bottom: 20px; line-height: 1.6; }
+                    .modal-control {
+                        display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+                        background: #000; padding: 10px; border-radius: 10px; width: fit-content;
+                    }
+                    .action-btn {
+                        width: 100%; padding: 15px; background: #FF0033; color: #fff; border: none; font-weight: bold; cursor: pointer;
+                        font-family: 'Orbitron'; letter-spacing: 2px;
+                    }
+                    .action-btn:hover { background: #cc0029; }
+                    
+                    @media(max-width: 768px) {
+                        .modal-content {
+                            padding: 20px;
+                            max-height: 95vh;
+                        }
+                        .modal-grid { 
+                            grid-template-columns: 1fr;
+                            gap: 20px;
+                        }
+                        .main-display { 
+                            height: 250px;
+                        }
+                        .close-modal {
+                            top: 15px;
+                            right: 15px;
+                            font-size: 1.75rem;
+                        }
+                        .modal-info h2 {
+                            font-size: 1.5rem;
+                        }
+                        .modal-price {
+                            font-size: 1.2rem;
+                        }
+                        #modalAccDesc {
+                            font-size: 0.9rem;
+                        }
+                        .thumbnails {
+                            justify-content: center;
+                        }
+                        .thumb {
+                            width: 60px;
+                            height: 45px;
+                        }
+                    }
+                    
+                    @media(max-width: 480px) {
+                        .modal-overlay {
+                            padding: 10px;
+                        }
+                        .modal-content {
+                            padding: 15px;
+                            border-radius: 16px;
+                        }
+                        .main-display {
+                            height: 200px;
+                            margin-bottom: 10px;
+                        }
+                        .close-modal {
+                            top: 10px;
+                            right: 10px;
+                            font-size: 1.5rem;
+                        }
+                        .modal-info h2 {
+                            font-size: 1.3rem;
+                        }
+                        .modal-price {
+                            font-size: 1.1rem;
+                            margin-bottom: 15px;
+                        }
+                        #modalAccDesc {
+                            font-size: 0.85rem;
+                            margin-bottom: 15px;
+                        }
+                        .modal-control {
+                            padding: 8px;
+                            gap: 12px;
+                        }
+                        .action-btn {
+                            padding: 12px;
+                            font-size: 0.9rem;
+                        }
+                        .thumb {
+                            width: 50px;
+                            height: 40px;
+                        }
+                    }
+                </style>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                document.querySelector('.close-modal').addEventListener('click', closeModal);
+            }
+        }
+
+        window.openAccessoryDetails = function (id) {
+            currentModalAccessory = accessories.find(a => a.id === id);
+            if (!currentModalAccessory) return;
+
+            const modal = document.getElementById('accessoryDetailModal');
+            document.getElementById('modalAccName').textContent = currentModalAccessory.name;
+            document.getElementById('modalAccPrice').textContent = `AED ${currentModalAccessory.price}`;
+            document.getElementById('modalAccDesc').textContent = currentModalAccessory.description;
+
+            // Sync Quantity
+            const qty = cart[id] || 0;
+            document.getElementById('modalQty').textContent = qty;
+
+            // Media
+            updateMediaGallery();
+
+            modal.style.display = 'flex';
+        }
+
+        window.updateModalQty = function (change) {
+            if (!currentModalAccessory) return;
+            updateQty(currentModalAccessory.id, change);
+            document.getElementById('modalQty').textContent = cart[currentModalAccessory.id] || 0;
+        }
+
+        window.closeModal = function () {
+            document.getElementById('accessoryDetailModal').style.display = 'none';
+        }
+
+        function updateMediaGallery() {
+            const mainDisplay = document.querySelector('.main-display');
+            const thumbsContainer = document.querySelector('.thumbnails');
+
+            // Collect media
+            let media = [];
+            if (currentModalAccessory.imageUrl) media.push({ type: 'image', src: currentModalAccessory.imageUrl });
+            if (currentModalAccessory.additionalImages && Array.isArray(currentModalAccessory.additionalImages)) {
+                currentModalAccessory.additionalImages.forEach(img => media.push({ type: 'image', src: img }));
+            }
+            if (currentModalAccessory.videoUrl) media.push({ type: 'video', src: currentModalAccessory.videoUrl });
+
+            // If no media, use icon or placeholder
+            if (media.length === 0) {
+                media.push({ type: 'image', src: 'https://via.placeholder.com/600x400?text=No+Preview' });
+            }
+
+            thumbsContainer.innerHTML = '';
+            media.forEach((item, index) => {
+                const thumb = document.createElement('img');
+                thumb.className = `thumb ${index === 0 ? 'active' : ''}`;
+                thumb.src = item.type === 'video' ? 'https://img.icons8.com/ios-filled/50/FF0033/video.png' : item.src;
+                thumb.onclick = () => {
+                    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                    showMedia(item);
+                };
+                thumbsContainer.appendChild(thumb);
+            });
+            showMedia(media[0]);
+        }
+
+        function showMedia(item) {
+            const mainDisplay = document.querySelector('.main-display');
+            if (item.type === 'video') {
+                if (item.src.includes('youtube.com') || item.src.includes('youtu.be')) {
+                    let videoId = '';
+                    const match = item.src.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|v\/)([^&]+)/);
+                    if (match) videoId = match[1];
+                    mainDisplay.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+                } else {
+                    mainDisplay.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${item.src}" type="video/mp4"></video>`;
+                }
+            } else {
+                mainDisplay.innerHTML = `<img src="${item.src}" alt="Preview">`;
+            }
+        }
+    </script>
+</body>
+
+</html>

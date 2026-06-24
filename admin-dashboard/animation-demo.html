@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#000000">
+    <title>Animation Demo - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bikes.css">
+    <link rel="stylesheet" href="css/bookings.css">
+    <link rel="stylesheet" href="css/responsive-utilities.css">
+    <style>
+        .demo-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .demo-section h2 {
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .demo-item {
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .demo-item i {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .animation-trigger {
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .animate-slideUp {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .animate-slideInLeft {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .animate-scaleIn {
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .animate-bounce {
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .animate-shimmer {
+            animation: shimmer 2s linear infinite;
+            background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .info-box {
+            background: rgba(255, 0, 51, 0.1);
+            border: 1px solid rgba(255, 0, 51, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .info-box h3 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .responsive-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .device-indicator {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .device-indicator.active {
+            border-color: var(--accent-blue);
+            background: rgba(255, 0, 51, 0.1);
+        }
+
+        @media (max-width: 1200px) {
+            .device-indicator[data-device="desktop"] {
+                display: none;
+            }
+
+            .device-indicator[data-device="tablet"] {
+                border-color: var(--accent-blue);
+                background: rgba(255, 0, 51, 0.1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .device-indicator[data-device="tablet"] {
+                display: none;
+            }
+
+            .device-indicator[data-device="mobile"] {
+                border-color: var(--accent-blue);
+                background: rgba(255, 0, 51, 0.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <main class="main-content" style="margin-left: 0;">
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>🎨 Animation & Responsive Design Demo</h1>
+                </div>
+
+                <!-- Device Indicator -->
+                <div class="info-box">
+                    <h3><i class="fas fa-mobile-alt"></i> Current Device View</h3>
+                    <div class="responsive-demo">
+                        <div class="device-indicator" data-device="desktop">
+                            <i class="fas fa-desktop"></i>
+                            <p>Desktop (1200px+)</p>
+                        </div>
+                        <div class="device-indicator" data-device="tablet">
+                            <i class="fas fa-tablet-alt"></i>
+                            <p>Tablet (768-1199px)</p>
+                        </div>
+                        <div class="device-indicator" data-device="mobile">
+                            <i class="fas fa-mobile-alt"></i>
+                            <p>Mobile (<768px)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animation Demos -->
+                <div class="demo-section">
+                    <h2><i class="fas fa-magic"></i> Animation Effects</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Click any card to replay the
+                        animation</p>
+
+                    <div class="demo-grid">
+                        <div class="demo-item" onclick="replayAnimation(this, 'fadeIn')">
+                            <i class="fas fa-eye"></i>
+                            <h3>Fade In</h3>
+                            <p>Smooth opacity transition</p>
+                        </div>
+
+                        <div class="demo-item" onclick="replayAnimation(this, 'slideUp')">
+                            <i class="fas fa-arrow-up"></i>
+                            <h3>Slide Up</h3>
+                            <p>Slides from bottom</p>
+                        </div>
+
+                        <div class="demo-item" onclick="replayAnimation(this, 'slideInLeft')">
+                            <i class="fas fa-arrow-left"></i>
+                            <h3>Slide Left</h3>
+                            <p>Slides from left</p>
+                        </div>
+
+                        <div class="demo-item" onclick="replayAnimation(this, 'slideInRight')">
+                            <i class="fas fa-arrow-right"></i>
+                            <h3>Slide Right</h3>
+                            <p>Slides from right</p>
+                        </div>
+
+                        <div class="demo-item" onclick="replayAnimation(this, 'scaleIn')">
+                            <i class="fas fa-expand"></i>
+                            <h3>Scale In</h3>
+                            <p>Scales from center</p>
+                        </div>
+
+                        <div class="demo-item animate-pulse">
+                            <i class="fas fa-heart"></i>
+                            <h3>Pulse</h3>
+                            <p>Continuous pulse</p>
+                        </div>
+
+                        <div class="demo-item animate-bounce">
+                            <i class="fas fa-basketball-ball"></i>
+                            <h3>Bounce</h3>
+                            <p>Bouncing effect</p>
+                        </div>
+
+                        <div class="demo-item animate-shimmer">
+                            <i class="fas fa-spinner"></i>
+                            <h3>Shimmer</h3>
+                            <p>Loading effect</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button Animations -->
+                <div class="demo-section">
+                    <h2><i class="fas fa-hand-pointer"></i> Interactive Elements</h2>
+                    <div class="controls">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Primary Button
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-edit"></i> Secondary Button
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Danger Button
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-check"></i> Success Button
+                        </button>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        <i class="fas fa-info-circle"></i> Hover over buttons to see ripple effects
+                    </p>
+                </div>
+
+                <!-- Card Animations -->
+                <div class="demo-section">
+                    <h2><i class="fas fa-th-large"></i> Card Hover Effects</h2>
+                    <div class="bikes-grid" style="margin-top: 1rem;">
+                        <div class="bike-card">
+                            <img src="https://via.placeholder.com/320x220?text=Hover+Me" alt="Demo" class="bike-image">
+                            <div class="bike-details">
+                                <div class="bike-header">
+                                    <div class="bike-title">
+                                        <h3>Demo Card 1</h3>
+                                        <p class="bike-model">Hover Effect</p>
+                                    </div>
+                                    <span class="bike-price">AED 99</span>
+                                </div>
+                                <div class="bike-meta">
+                                    <span>Lift Effect</span>
+                                    <span>Shadow Glow</span>
+                                </div>
+                                <div class="bike-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="bike-status status-available">Available</span>
+                        </div>
+
+                        <div class="bike-card">
+                            <img src="https://via.placeholder.com/320x220?text=Image+Zoom" alt="Demo" class="bike-image">
+                            <div class="bike-details">
+                                <div class="bike-header">
+                                    <div class="bike-title">
+                                        <h3>Demo Card 2</h3>
+                                        <p class="bike-model">Image Zoom</p>
+                                    </div>
+                                    <span class="bike-price">AED 149</span>
+                                </div>
+                                <div class="bike-meta">
+                                    <span>Scale Transform</span>
+                                    <span>Smooth</span>
+                                </div>
+                                <div class="bike-actions">
+                                    <button class="btn btn-secondary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="bike-status status-rented">Rented</span>
+                        </div>
+
+                        <div class="bike-card">
+                            <img src="https://via.placeholder.com/320x220?text=Shimmer+Effect" alt="Demo"
+                                class="bike-image">
+                            <div class="bike-details">
+                                <div class="bike-header">
+                                    <div class="bike-title">
+                                        <h3>Demo Card 3</h3>
+                                        <p class="bike-model">All Effects</p>
+                                    </div>
+                                    <span class="bike-price">AED 199</span>
+                                </div>
+                                <div class="bike-meta">
+                                    <span>Combined</span>
+                                    <span>Animations</span>
+                                </div>
+                                <div class="bike-actions">
+                                    <button class="btn btn-danger">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="bike-status status-maintenance">Maintenance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsive Features -->
+                <div class="demo-section">
+                    <h2><i class="fas fa-mobile-alt"></i> Responsive Features</h2>
+                    <div class="info-box">
+                        <h3>Try These:</h3>
+                        <ul style="color: var(--text-secondary); line-height: 2;">
+                            <li><i class="fas fa-check"></i> Resize your browser window</li>
+                            <li><i class="fas fa-check"></i> Open DevTools and toggle device mode</li>
+                            <li><i class="fas fa-check"></i> Test on actual mobile devices</li>
+                            <li><i class="fas fa-check"></i> Try landscape and portrait orientations</li>
+                            <li><i class="fas fa-check"></i> Check touch interactions on mobile</li>
+                        </ul>
+                    </div>
+
+                    <div class="stats-container" style="margin-top: 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Desktop</h3>
+                                <p>Full Layout</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tablet-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Tablet</h3>
+                                <p>Optimized</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Mobile</h3>
+                                <p>Touch-Friendly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Info -->
+                <div class="demo-section">
+                    <h2><i class="fas fa-tachometer-alt"></i> Performance Features</h2>
+                    <div class="demo-grid">
+                        <div class="demo-item">
+                            <i class="fas fa-rocket"></i>
+                            <h3>GPU Accelerated</h3>
+                            <p>Transform & opacity only</p>
+                        </div>
+                        <div class="demo-item">
+                            <i class="fas fa-layer-group"></i>
+                            <h3>Staggered Loading</h3>
+                            <p>Sequential animations</p>
+                        </div>
+                        <div class="demo-item">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                            <h3>Optimized Reflows</h3>
+                            <p>Minimal layout shifts</p>
+                        </div>
+                        <div class="demo-item">
+                            <i class="fas fa-stopwatch"></i>
+                            <h3>60 FPS</h3>
+                            <p>Smooth animations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation Link -->
+                <div class="info-box">
+                    <h3><i class="fas fa-book"></i> Full Documentation</h3>
+                    <p>For complete details on all responsive features and animations, see <strong>RESPONSIVE-FEATURES.md</strong></p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;"
+                        onclick="window.location.href='bikes.html'">
+                        <i class="fas fa-bicycle"></i> View Bikes Page
+                    </button>
+                    <button class="btn btn-secondary" style="margin-top: 1rem; margin-left: 1rem;"
+                        onclick="window.location.href='bookings.html'">
+                        <i class="fas fa-calendar-alt"></i> View Bookings Page
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function replayAnimation(element, animationName) {
+            element.classList.remove('animate-' + animationName);
+            void element.offsetWidth; // Trigger reflow
+            element.classList.add('animate-' + animationName);
+
+            setTimeout(() => {
+                element.classList.remove('animate-' + animationName);
+            }, 600);
+        }
+
+        // Update device indicator on resize
+        function updateDeviceIndicator() {
+            const width = window.innerWidth;
+            const indicators = document.querySelectorAll('.device-indicator');
+
+            indicators.forEach(indicator => {
+                indicator.classList.remove('active');
+            });
+
+            if (width >= 1200) {
+                document.querySelector('[data-device="desktop"]')?.classList.add('active');
+            } else if (width >= 768) {
+                document.querySelector('[data-device="tablet"]')?.classList.add('active');
+            } else {
+                document.querySelector('[data-device="mobile"]')?.classList.add('active');
+            }
+        }
+
+        window.addEventListener('resize', updateDeviceIndicator);
+        window.addEventListener('load', updateDeviceIndicator);
+    </script>
+</body>
+
+</html>

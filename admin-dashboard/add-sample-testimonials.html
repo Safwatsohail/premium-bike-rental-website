@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sample Testimonials to Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+        }
+        .container {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #ff0033;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #ff0033;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #cc0029;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0a0a0a;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #00ff94; }
+        .error { color: #ff0033; }
+        .info { color: #3b82f6; }
+    </style>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Add Sample Testimonials to Firebase</h1>
+        <p>This will add 10 sample testimonials to your Firebase database (same as in index.html).</p>
+        
+        <button id="addBtn" onclick="addSampleTestimonials()">Add Sample Testimonials</button>
+        <button onclick="clearTestimonials()">Clear All Testimonials</button>
+        <button onclick="viewTestimonials()">View Current Testimonials</button>
+        
+        <div id="output"></div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const time = new Date().toLocaleTimeString();
+            output.innerHTML += `<div class="${type}">[${time}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        const sampleTestimonials = [
+            {
+                customerName: "Ahmed K.",
+                customerTitle: "Regular Customer",
+                rating: 5,
+                text: "Absolutely phenomenal service! The Yamaha R1 was pristine and the team made everything seamless. Best rental experience in Dubai!",
+                avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                displayOrder: 1,
+                isActive: true
+            },
+            {
+                customerName: "Sara M.",
+                customerTitle: "Adventure Seeker",
+                rating: 5,
+                text: "Incredible fleet of bikes! Rented the Kawasaki H2 for a weekend trip and it was pure adrenaline. Professional staff and fair pricing.",
+                avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                displayOrder: 2,
+                isActive: true
+            },
+            {
+                customerName: "Khalid A.",
+                customerTitle: "Speed Enthusiast",
+                rating: 5,
+                text: "Five stars all the way! The booking process was smooth, bikes were spotless, and customer service was exceptional. Highly recommend!",
+                avatar: "https://randomuser.me/api/portraits/men/67.jpg",
+                displayOrder: 3,
+                isActive: true
+            },
+            {
+                customerName: "Fatima R.",
+                customerTitle: "First-Time Rider",
+                rating: 4,
+                text: "Great experience overall! The bike was in perfect condition and the team was very helpful. Will definitely be back for my next ride.",
+                avatar: "https://randomuser.me/api/portraits/women/65.jpg",
+                displayOrder: 4,
+                isActive: true
+            },
+            {
+                customerName: "Omar S.",
+                customerTitle: "VIP Member",
+                rating: 5,
+                text: "Premium bikes, premium service! The attention to detail and customer care is unmatched. This is THE place to rent in Dubai.",
+                avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+                displayOrder: 5,
+                isActive: true
+            },
+            {
+                customerName: "Layla H.",
+                customerTitle: "Weekend Warrior",
+                rating: 5,
+                text: "Best decision ever! The bike performed flawlessly and the entire experience was top-tier. Can't wait for my next rental!",
+                avatar: "https://randomuser.me/api/portraits/women/28.jpg",
+                displayOrder: 6,
+                isActive: true
+            },
+            {
+                customerName: "Rashid M.",
+                customerTitle: "Touring Expert",
+                rating: 5,
+                text: "Exceptional quality and service! Every detail was perfect from start to finish. Four Season Moto sets the standard for bike rentals.",
+                avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+                displayOrder: 7,
+                isActive: true
+            },
+            {
+                customerName: "Noor A.",
+                customerTitle: "City Cruiser",
+                rating: 4.5,
+                text: "Amazing bikes and even better service! The staff went above and beyond to ensure I had the perfect ride. Truly impressive!",
+                avatar: "https://randomuser.me/api/portraits/women/50.jpg",
+                displayOrder: 8,
+                isActive: true
+            },
+            {
+                customerName: "Zayed F.",
+                customerTitle: "Track Day Regular",
+                rating: 5,
+                text: "Luxury meets performance! The bikes are maintained to perfection and the whole experience feels premium. Worth every dirham!",
+                avatar: "https://randomuser.me/api/portraits/men/58.jpg",
+                displayOrder: 9,
+                isActive: true
+            },
+            {
+                customerName: "Mariam K.",
+                customerTitle: "Coastal Rider",
+                rating: 5,
+                text: "Flawless from booking to return! The team is professional, the bikes are pristine, and the experience is unforgettable. 10/10!",
+                avatar: "https://randomuser.me/api/portraits/women/72.jpg",
+                displayOrder: 10,
+                isActive: true
+            }
+        ];
+
+        async function addSampleTestimonials() {
+            const btn = document.getElementById('addBtn');
+            btn.disabled = true;
+            btn.textContent = 'Adding...';
+            
+            log('Starting to add sample testimonials...', 'info');
+            
+            if (!window.db) {
+                log('ERROR: Firebase not initialized!', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Add Sample Testimonials';
+                return;
+            }
+
+            try {
+                let added = 0;
+                for (const testimonial of sampleTestimonials) {
+                    const data = {
+                        ...testimonial,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await window.db.collection('testimonials').add(data);
+                    added++;
+                    log(`✅ Added: ${testimonial.customerName} (${testimonial.rating} stars)`, 'success');
+                }
+                
+                log(`🎉 Successfully added ${added} testimonials!`, 'success');
+                log('You can now view them in the admin dashboard.', 'info');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Add Sample Testimonials';
+        }
+
+        async function clearTestimonials() {
+            if (!confirm('Are you sure you want to delete ALL testimonials?')) {
+                return;
+            }
+            
+            log('Clearing all testimonials...', 'info');
+            
+            try {
+                const snapshot = await window.db.collection('testimonials').get();
+                const batch = window.db.batch();
+                
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                
+                await batch.commit();
+                log(`✅ Deleted ${snapshot.size} testimonials`, 'success');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function viewTestimonials() {
+            log('Loading testimonials...', 'info');
+            
+            try {
+                const snapshot = await window.db.collection('testimonials')
+                    .orderBy('displayOrder', 'asc')
+                    .get();
+                
+                if (snapshot.empty) {
+                    log('No testimonials found in database.', 'info');
+                    return;
+                }
+                
+                log(`Found ${snapshot.size} testimonials:`, 'success');
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    log(`  • ${data.customerName} - ${data.rating}⭐ - ${data.isActive ? 'Active' : 'Inactive'}`, 'info');
+                });
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check Firebase on load
+        window.addEventListener('load', () => {
+            if (window.db) {
+                log('✅ Firebase connected successfully!', 'success');
+                log('Ready to add testimonials.', 'info');
+            } else {
+                log('❌ Firebase not connected. Check firebase-config.js', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

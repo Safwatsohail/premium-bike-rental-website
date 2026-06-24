@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup BikeRent Pro - Firebase Data</title>
+    <link rel="stylesheet" href="css/setup.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🚴‍♂️ BikeRent Pro Setup</h1>
+        
+        <div class="status" id="status">
+            <div class="loading">Initializing Firebase...</div>
+        </div>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="stats" id="stats" class="hidden">
+            <div class="stat-item">
+                <div class="stat-number" id="bikesCount">0</div>
+                <div class="stat-label">Bikes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="usersCount">0</div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="bookingsCount">0</div>
+                <div class="stat-label">Bookings</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="revenueCount">AED 0</div>
+                <div class="stat-label">Revenue</div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" id="setupBtn" onclick="startSetup()">Setup Sample Data</button>
+            <button class="btn btn-danger" id="clearBtn" onclick="clearData()">Clear All Data</button>
+        </div>
+        
+        <div class="footer-info">
+            <p>📊 This will populate your Firebase database with sample bikes, users, bookings, and settings.</p>
+            <p>🔗 Make sure your Firebase project is properly configured.</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase directly in this file
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.firebasestorage.app",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "1:YOUR_MESSAGING_SENDER_ID:web:27d28d44e449306b726b97",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // Sample data
+        const sampleData = {
+            settings: {
+                companyName: 'Four Season Moto',
+                currency: 'AED',
+                language: 'en',
+                theme: 'dark',
+                email: 'info@firstseasonmoto.com',
+                phone: '+1-234-567-8900',
+                address: '123 Bike Street, Dubai, UAE',
+                website: 'https://firstseasonmoto.com',
+                businessHours: {
+                    monday: '9:00 AM - 6:00 PM',
+                    tuesday: '9:00 AM - 6:00 PM',
+                    wednesday: '9:00 AM - 6:00 PM',
+                    thursday: '9:00 AM - 6:00 PM',
+                    friday: '9:00 AM - 6:00 PM',
+                    saturday: '10:00 AM - 4:00 PM',
+                    sunday: 'Closed'
+                }
+            },
+            bikes: [
+                {
+                    name: 'Mountain Pro X1',
+                    model: '2023',
+                    type: 'mountain',
+                    year: 2023,
+                    price: 49.99,
+                    status: 'available',
+                    features: ['21 Gears', 'Disc Brakes', 'Front Suspension', 'Aluminum Frame'],
+                    description: 'Perfect for off-road adventures with its durable frame and smooth suspension system.',
+                    image: 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+                },
+                {
+                    name: 'Roadster 5000',
+                    model: '2023',
+                    type: 'road',
+                    year: 2023,
+                    price: 39.99,
+                    status: 'rented',
+                    features: ['18 Gears', 'Lightweight Frame', 'Aero Design', 'Carbon Fork'],
+                    description: 'Designed for speed and efficiency on paved roads with its aerodynamic frame.',
+                    image: 'https://images.unsplash.com/photo-1507030585642-3a6c3f8e3f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+                },
+                {
+                    name: 'Urban Commuter E-500',
+                    model: '2023',
+                    type: 'electric',
+                    year: 2023,
+                    price: 69.99,
+                    status: 'available',
+                    features: ['Electric Assist', '50km Range', 'LED Display', 'Removable Battery'],
+                    description: 'Eco-friendly commuting with powerful electric assist for easy riding.',
+                    image: 'https://images.unsplash.com/photo-1558980394-4c7c9299fe96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+                },
+                {
+                    name: 'Hybrid City Plus',
+                    model: '2023',
+                    type: 'hybrid',
+                    year: 2023,
+                    price: 34.99,
+                    status: 'available',
+                    features: ['21 Gears', 'Comfort Seat', 'Rack', 'Mudguards'],
+                    description: 'Versatile bike perfect for city commuting and light trail riding.',
+                    image: 'https://images.unsplash.com/photo-1548620150-685b7040b9b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+                },
+                {
+                    name: 'Pro Racing 2000',
+                    model: '2023',
+                    type: 'road',
+                    year: 2023,
+                    price: 89.99,
+                    status: 'maintenance',
+                    features: ['24 Gears', 'Carbon Frame', 'Tubeless Tires', 'Aero Bars'],
+                    description: 'Professional racing bike built for competitive cycling.',
+                    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+                }
+            ],
+            users: [
+                {
+                    name: 'John Doe',
+                    email: 'john.doe@email.com',
+                    phone: '+1-234-567-8901',
+                    address: '456 User Street, Dubai, UAE',
+                    dateOfBirth: '1990-05-15',
+                    emergencyContact: {
+                        name: 'Jane Doe',
+                        phone: '+1-234-567-8902',
+                        relationship: 'Spouse'
+                    },
+                    drivingLicense: 'DL123456789',
+                    licenseExpiry: '2025-12-31',
+                    membershipType: 'premium',
+                    membershipExpiry: '2024-12-31',
+                    status: 'active',
+                    totalRentals: 5,
+                    avatar: 'https://via.placeholder.com/100x100?text=JD'
+                },
+                {
+                    name: 'Jane Smith',
+                    email: 'jane.smith@email.com',
+                    phone: '+1-234-567-8903',
+                    address: '789 User Avenue, Dubai, UAE',
+                    dateOfBirth: '1985-08-22',
+                    emergencyContact: {
+                        name: 'Bob Smith',
+                        phone: '+1-234-567-8904',
+                        relationship: 'Brother'
+                    },
+                    drivingLicense: 'DL987654321',
+                    licenseExpiry: '2024-10-31',
+                    membershipType: 'regular',
+                    membershipExpiry: '2024-06-30',
+                    status: 'active',
+                    totalRentals: 12,
+                    avatar: 'https://via.placeholder.com/100x100?text=JS'
+                },
+                {
+                    name: 'Mike Johnson',
+                    email: 'mike.johnson@email.com',
+                    phone: '+1-234-567-8905',
+                    address: '321 User Road, Dubai, UAE',
+                    dateOfBirth: '1992-03-10',
+                    emergencyContact: {
+                        name: 'Sarah Johnson',
+                        phone: '+1-234-567-8906',
+                        relationship: 'Sister'
+                    },
+                    drivingLicense: 'DL456789123',
+                    licenseExpiry: '2025-06-30',
+                    membershipType: 'regular',
+                    membershipExpiry: '2024-09-30',
+                    status: 'inactive',
+                    totalRentals: 3,
+                    avatar: 'https://via.placeholder.com/100x100?text=MJ'
+                }
+            ],
+            bookings: [
+                {
+                    userId: null, // Will be set after users are added
+                    bikeId: null, // Will be set after bikes are added
+                    startDate: new Date('2024-12-01'),
+                    endDate: new Date('2024-12-03'),
+                    startTime: '10:00 AM',
+                    endTime: '10:00 AM',
+                    totalAmount: 79.98,
+                    depositAmount: 50,
+                    status: 'active',
+                    paymentMethod: 'credit_card',
+                    paymentStatus: 'paid',
+                    notes: 'Customer requested helmet and lock'
+                },
+                {
+                    userId: null,
+                    bikeId: null,
+                    startDate: new Date('2024-11-25'),
+                    endDate: new Date('2024-11-28'),
+                    startTime: '2:00 PM',
+                    endTime: '2:00 PM',
+                    totalAmount: 149.97,
+                    depositAmount: 50,
+                    status: 'completed',
+                    paymentMethod: 'cash',
+                    paymentStatus: 'paid',
+                    notes: 'Weekend rental for mountain trail'
+                },
+                {
+                    userId: null,
+                    bikeId: null,
+                    startDate: new Date('2024-12-05'),
+                    endDate: new Date('2024-12-07'),
+                    startTime: '9:00 AM',
+                    endTime: '9:00 AM',
+                    totalAmount: 139.98,
+                    depositAmount: 50,
+                    status: 'pending',
+                    paymentMethod: 'credit_card',
+                    paymentStatus: 'pending',
+                    notes: 'Awaiting payment confirmation'
+                }
+            ]
+        };
+
+        let setupProgress = 0;
+
+        function updateStatus(message, type = 'loading') {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        function updateStats(bikes, users, bookings, revenue) {
+            document.getElementById('stats').classList.remove('hidden');
+            document.getElementById('bikesCount').textContent = bikes;
+            document.getElementById('usersCount').textContent = users;
+            document.getElementById('bookingsCount').textContent = bookings;
+            document.getElementById('revenueCount').textContent = 'AED ' + revenue;
+        }
+
+        async function startSetup() {
+            const setupBtn = document.getElementById('setupBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            setupBtn.disabled = true;
+            clearBtn.disabled = true;
+            
+            try {
+                updateStatus('🚀 Starting setup...', 'loading');
+                updateProgress(0);
+
+                // 1. Add Settings
+                updateStatus('⚙️ Adding settings...', 'loading');
+                updateProgress(10);
+                await db.collection('settings').doc('app').set({
+                    ...sampleData.settings,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 2. Add Bikes
+                updateStatus('🚴‍♂️ Adding bikes...', 'loading');
+                updateProgress(20);
+                const bikeIds = [];
+                for (const bike of sampleData.bikes) {
+                    const docRef = await db.collection('bikes').add({
+                        ...bike,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    bikeIds.push(docRef.id);
+                    updateProgress(20 + (bikeIds.length / sampleData.bikes.length) * 20);
+                }
+
+                // 3. Add Users
+                updateStatus('👥 Adding users...', 'loading');
+                updateProgress(40);
+                const userIds = [];
+                for (const user of sampleData.users) {
+                    const docRef = await db.collection('users').add({
+                        ...user,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    userIds.push(docRef.id);
+                    updateProgress(40 + (userIds.length / sampleData.users.length) * 20);
+                }
+
+                // 4. Add Bookings
+                updateStatus('📅 Adding bookings...', 'loading');
+                updateProgress(60);
+                const bookingIds = [];
+                let totalRevenue = 0;
+                
+                for (let i = 0; i < sampleData.bookings.length; i++) {
+                    const booking = {
+                        ...sampleData.bookings[i],
+                        userId: userIds[i % userIds.length],
+                        bikeId: bikeIds[i % bikeIds.length],
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    const docRef = await db.collection('bookings').add(booking);
+                    bookingIds.push(docRef.id);
+                    totalRevenue += booking.totalAmount;
+                    updateProgress(60 + (bookingIds.length / sampleData.bookings.length) * 30);
+                }
+
+                // 5. Finalize
+                updateProgress(100);
+                updateStatus('🎉 Setup completed successfully!', 'success');
+                updateStats(sampleData.bikes.length, sampleData.users.length, sampleData.bookings.length, totalRevenue.toFixed(2));
+
+            } catch (error) {
+                console.error('Setup error:', error);
+                updateStatus('❌ Error: ' + error.message, 'error');
+            } finally {
+                setupBtn.disabled = false;
+                clearBtn.disabled = false;
+            }
+        }
+
+        async function clearData() {
+            if (!confirm('⚠️ Are you sure you want to delete ALL data? This cannot be undone!')) {
+                return;
+            }
+
+            const clearBtn = document.getElementById('clearBtn');
+            const setupBtn = document.getElementById('setupBtn');
+            
+            clearBtn.disabled = true;
+            setupBtn.disabled = true;
+            
+            try {
+                updateStatus('🗑️ Clearing all data...', 'loading');
+                updateProgress(0);
+
+                // Get all collections
+                const bikes = await db.collection('bikes').get();
+                const users = await db.collection('users').get();
+                const bookings = await db.collection('bookings').get();
+
+                // Delete all documents
+                let deleted = 0;
+                const totalToDelete = bikes.size + users.size + bookings.size + 1; // +1 for settings
+
+                for (const doc of bikes.docs) {
+                    await doc.ref.delete();
+                    deleted++;
+                    updateProgress((deleted / totalToDelete) * 100);
+                }
+
+                for (const doc of users.docs) {
+                    await doc.ref.delete();
+                    deleted++;
+                    updateProgress((deleted / totalToDelete) * 100);
+                }
+
+                for (const doc of bookings.docs) {
+                    await doc.ref.delete();
+                    deleted++;
+                    updateProgress((deleted / totalToDelete) * 100);
+                }
+
+                // Clear settings
+                await db.collection('settings').doc('app').delete();
+                updateProgress(100);
+
+                updateStatus('✅ All data cleared successfully!', 'success');
+                updateStats(0, 0, 0, 0);
+
+            } catch (error) {
+                console.error('Clear error:', error);
+                updateStatus('❌ Error: ' + error.message, 'error');
+            } finally {
+                clearBtn.disabled = false;
+                setupBtn.disabled = false;
+            }
+        }
+
+        // Check current data on load and auto-populate if empty
+        window.addEventListener('load', async () => {
+            try {
+                const bikes = await db.collection('bikes').get();
+                const users = await db.collection('users').get();
+                const bookings = await db.collection('bookings').get();
+                
+                const totalRevenue = bookings.docs
+                    .filter(doc => doc.data().status === 'completed')
+                    .reduce((sum, doc) => sum + (doc.data().totalAmount || 0), 0);
+
+                updateStats(bikes.size, users.size, bookings.size, totalRevenue.toFixed(2));
+                
+                if (bikes.size === 0 && users.size === 0 && bookings.size === 0) {
+                    updateStatus('🚀 Database is empty, auto-populating...', 'loading');
+                    // Automatically start setup
+                    setTimeout(() => startSetup(), 1000);
+                } else if (bikes.size === 0) {
+                    updateStatus('🚴‍♂️ Bikes collection empty, auto-populating...', 'loading');
+                    setTimeout(() => startSetup(), 1000);
+                } else {
+                    updateStatus('📊 Data already exists in your database', 'success');
+                }
+                
+                updateProgress(100);
+                
+            } catch (error) {
+                console.error('Load error:', error);
+                updateStatus('❌ Error loading data: ' + error.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

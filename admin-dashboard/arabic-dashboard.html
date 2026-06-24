@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم تأجير الدراجات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        .sidebar {
+            left: 0 !important;
+            right: auto !important;
+        }
+        .main-content {
+            margin-left: 280px !important;
+            margin-right: 20px !important;
+        }
+        .page-header h1 {
+            text-align: right;
+        }
+        .stat-card {
+            text-align: right;
+        }
+        .stat-info h3, .stat-info p {
+            text-align: right;
+        }
+        .recent-orders th, .recent-orders td {
+            text-align: right;
+        }
+        .language-switcher {
+            margin-left: 10px;
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="موسم الأول للدراجات" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="main_admin.html"><i class="fas fa-home"></i> لوحة التحكم</a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> المستخدمون</a></li>
+                    <li><a href="bikes.html"><i class="fas fa-bicycle"></i> الدراجات</a></li>
+                    <li><a href="bookings.html"><i class="fas fa-calendar-alt"></i> الحجوزات</a></li>
+                    <li><a href="testimonials.html"><i class="fas fa-star"></i> التقييمات</a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> التحليلات</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1><i class="fas fa-home"></i> نظرة عامة على لوحة التحكم</h1>
+                <div class="header-actions">
+                    <div class="language-switcher">
+                        <button onclick="switchToEnglish()" class="btn btn-outline">English</button>
+                        <button onclick="switchToArabic()" class="btn btn-outline">العربية</button>
+                    </div>
+                    <a href="bikes.html" class="btn btn-primary">
+                        <i class="fas fa-bicycle"></i> إدارة الدراجات
+                    </a>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-users">1,234</h3>
+                        <p>إجمالي المستخدمين</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-bicycle"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-bikes">56</h3>
+                        <p>إجمالي الدراجات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-bookings">89</h3>
+                        <p>إجمالي الحجوزات</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-revenue">AED 12,345</h3>
+                        <p>إجمالي الإيرادات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+                <h2>الأوامر الأخيرة</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الأمر</th>
+                            <th>العميل</th>
+                            <th>المنتج</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1234</td>
+                            <td>أحمد محمد</td>
+                            <td>دراجة جبلية</td>
+                            <td>AED 50</td>
+                            <td><span class="status-badge active">نشط</span></td>
+                            <td><button class="btn btn-sm">عرض</button></td>
+                        </tr>
+                        <tr>
+                            <td>#1235</td>
+                            <td>فاطمة علي</td>
+                            <td>دراجة كهربائية</td>
+                            <td>AED 75</td>
+                            <td><span class="status-badge active">نشط</span></td>
+                            <td><button class="btn btn-sm">عرض</button></td>
+                        </tr>
+                        <tr>
+                            <td>#1236</td>
+                            <td>محمد حسن</td>
+                            <td>دراجة طريق</td>
+                            <td>AED 40</td>
+                            <td><span class="status-badge completed">مكتمل</span></td>
+                            <td><button class="btn btn-sm">عرض</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script src="js/dashboard.js"></script>
+
+    <script>
+        function switchToEnglish() {
+            window.location.href = 'main_admin.html';
+        }
+
+        function switchToArabic() {
+            // Already on Arabic page
+            showNotification('أنت بالفعل على الصفحة العربية');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                z-index: 1000;
+                display: block;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Load real data from Firebase
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (window.db) {
+                    // Load users count
+                    const usersSnapshot = await window.db.collection('users').get();
+                    document.querySelector('.total-users').textContent = usersSnapshot.size;
+
+                    // Load bikes count
+                    const bikesSnapshot = await window.db.collection('bikes').get();
+                    document.querySelector('.total-bikes').textContent = bikesSnapshot.size;
+
+                    // Load bookings count
+                    const bookingsSnapshot = await window.db.collection('bookings').get();
+                    document.querySelector('.total-bookings').textContent = bookingsSnapshot.size;
+
+                    console.log('Arabic dashboard loaded with real data');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        });
+    </script>
+</body>
+</html>

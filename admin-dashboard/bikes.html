@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Bike Management - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bikes.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/responsive-utilities.css">
+    <link rel="stylesheet" href="css/upload-styles.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <!-- Fast Firebase Init - Prefetch data immediately -->
+    <script src="js/firebase-init.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="First Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="main_admin.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> <span>Users</span></a></li>
+                    <li class="active"><a href="bikes.html"><i class="fas fa-bicycle"></i> <span>Bikes</span></a></li>
+                    <li><a href="accessories.html"><i class="fas fa-toolbox"></i> <span>Accessories</span></a></li>
+                    <li><a href="bookings.html"><i class="fas fa-calendar-alt"></i> <span>Bookings</span></a></li>
+                    <li><a href="testimonials.html"><i class="fas fa-star"></i> <span>Testimonials</span></a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchBikes" placeholder="Search bikes...">
+                </div>
+                <div class="user-actions">
+                    <i class="fas fa-bell"></i>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="Admin">
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Bike Management</h1>
+                    <button id="addNewBike" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> <span>Add New Bike</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="clearTestData()" style="margin-left: 10px;">
+                        <i class="fas fa-trash-alt"></i> Clear Test Data
+                    </button>
+                </div>
+
+                <!-- Bikes Grid -->
+                <div class="bikes-grid" id="bikesContainer">
+                    <!-- Bikes will be dynamically loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Bike Modal -->
+    <div class="modal" id="bikeModal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Bike</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="bikeForm">
+                <input type="hidden" id="bikeId">
+
+                <div class="form-group">
+                    <label for="bikeImage">Bike Image</label>
+                    <div class="image-upload">
+                        <img id="imagePreview" src="https://via.placeholder.com/300x200?text=Upload+Image"
+                            alt="Bike Preview">
+                        <input type="file" id="bikeImage" accept="image/*">
+                        <label for="bikeImage" class="upload-btn">
+                            <i class="fas fa-upload"></i> <span>Choose
+                                Image</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bikeName">Bike Name</label>
+                    <input type="text" id="bikeName" placeholder="e.g. Yamaha R1" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bikeType">Bike Type</label>
+                        <select id="bikeType" required>
+                            <option value="">Select Type</option>
+                            <option value="sport">Sport</option>
+                            <option value="cruiser">Cruiser</option>
+                            <option value="offroad">Off-road</option>
+                            <option value="scooter">Scooter</option>
+                            <option value="electric">Electric</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bikePrice">Base Price per Day (AED)</label>
+                        <input type="number" id="bikePrice" min="0" step="0.01" placeholder="e.g. 500" required>
+                        <small style="color: #666; font-size: 0.8rem;">This will be used as the 1-day price</small>
+                    </div>
+                </div>
+
+                <!-- Pricing Tiers Section -->
+                <div class="pricing-tiers-section">
+                    <h3 style="color: #FF0033; margin-bottom: 20px; font-size: 1.2rem;">
+                        <i class="fas fa-tags"></i> Pricing Tiers
+                    </h3>
+                    <div class="pricing-grid">
+                        <div class="form-group">
+                            <label for="price1Day">1 Day - Per Day Rate (AED)</label>
+                            <input type="number" id="price1Day" min="0" step="0.01" placeholder="Auto-filled from base price">
+                            <small style="color: #666; font-size: 0.8rem;">Standard daily rate</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="price3Days">3 Days - Per Day Rate (AED)</label>
+                            <input type="number" id="price3Days" min="0" step="0.01" placeholder="e.g. 475">
+                            <small style="color: #666; font-size: 0.8rem;">Per day rate for 3-day bookings</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="price1Week">1 Week - Per Day Rate (AED)</label>
+                            <input type="number" id="price1Week" min="0" step="0.01" placeholder="e.g. 425">
+                            <small style="color: #666; font-size: 0.8rem;">Per day rate for weekly bookings</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="price1Month">1 Month - Per Day Rate (AED)</label>
+                            <input type="number" id="price1Month" min="0" step="0.01" placeholder="e.g. 375">
+                            <small style="color: #666; font-size: 0.8rem;">Per day rate for monthly bookings</small>
+                        </div>
+                    </div>
+                    <div class="pricing-helper">
+                        <button type="button" class="btn btn-secondary" onclick="calculateSuggestedPrices()">
+                            <i class="fas fa-calculator"></i> Calculate Suggested Prices
+                        </button>
+                        <small style="color: #888; display: block; margin-top: 10px;">
+                            Auto-calculate discounted prices: 3 days (5% off), 1 week (15% off), 1 month (25% off)
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bikeStatus">Status</label>
+                    <select id="bikeStatus" required>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                        <option value="maintenance">Under Maintenance</option>
+                    </select>
+                </div>
+
+                <!-- Bike Specs -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bikeHP">Horsepower (HP)</label>
+                        <input type="number" id="bikeHP" min="0" placeholder="e.g. 200">
+                    </div>
+                    <div class="form-group">
+                        <label for="bikeTopSpeed">Top Speed (km/h)</label>
+                        <input type="number" id="bikeTopSpeed" min="0" placeholder="e.g. 299">
+                    </div>
+                    <div class="form-group">
+                        <label for="bikeEngine">Engine (cc)</label>
+                        <input type="number" id="bikeEngine" min="0" placeholder="e.g. 998">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bikeFeatures">Features (comma separated)</label>
+                    <input type="text" id="bikeFeatures" placeholder="e.g. ABS, Traction Control, Quick Shifter">
+                </div>
+
+                <div class="form-group">
+                    <label for="bikeDescription">Description</label>
+                    <textarea id="bikeDescription" rows="3" placeholder="Brief description of the bike..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Images</label>
+                    <div class="image-upload-multiple">
+                        <input type="file" id="bikeImages" accept="image/*" multiple style="display: none;">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('bikeImages').click()">
+                            <i class="fas fa-images"></i> <span>Choose Images</span>
+                        </button>
+                        <div id="imagePreviewContainer" class="image-preview-grid"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Video Upload</label>
+                    <div class="video-upload">
+                        <input type="file" id="bikeVideo" accept="video/*" style="display: none;">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('bikeVideo').click()">
+                            <i class="fas fa-video"></i> <span>Choose Video File</span>
+                        </button>
+                        <div id="videoPreviewContainer"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bikeVideoUrl">Video URL (YouTube/External)</label>
+                    <input type="text" id="bikeVideoUrl" placeholder="e.g. https://youtube.com/watch?v=... or https://...">
+                    <small style="color: #666; font-size: 0.8rem;">Paste a YouTube link or direct video URL</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBike">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Bike</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this bike? This action
+                    cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script src="js/translation.js"></script>
+    <script src="js/bikes-firebase.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Show mobile menu toggle on small screens
+        function handleResize() {
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (window.innerWidth <= 768) {
+                toggle.style.display = 'block';
+            } else {
+                toggle.style.display = 'none';
+                document.querySelector('.sidebar').classList.remove('active');
+                document.querySelector('.sidebar-overlay').classList.remove('active');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('load', handleResize);
+    </script>
+    <script>
+        // Debug: Check if Firebase is loaded
+        console.log('Firebase db:', window.db);
+        console.log('Firebase auth:', window.auth);
+        console.log('Firebase storage:', window.storage);
+
+        // Show bikes count on page load
+        window.addEventListener('load', () => {
+            if (window.db) {
+                window.db.collection('bikes').get().then(snapshot => {
+                    console.log('Bikes in Firebase:', snapshot.size);
+                    // alert(`Found ${snapshot.size} bikes in Firebase. Check console for details.`);
+                }).catch(error => {
+                    console.error('Error getting bikes:', error);
+                    // alert('Error getting bikes: ' + error.message);
+                });
+            } else {
+                console.error('Firebase not loaded!');
+            }
+        });
+    </script>
+</body>
+
+</html>

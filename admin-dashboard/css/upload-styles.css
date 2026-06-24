@@ -1,0 +1,48 @@
+/* Upload Styles for Bikes Form */
+.image-upload-multiple {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.image-preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.video-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#videoPreviewContainer {
+    margin-top: 10px;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+}
+
+.upload-btn:hover {
+    background: rgba(255, 0, 51, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.upload-btn i {
+    font-size: 1.1rem;
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Switching Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #FF0033;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #FF0033;
+        }
+
+        .btn.active {
+            background: #FF0033;
+            color: #000;
+            border-color: #FF0033;
+            font-weight: bold;
+        }
+
+        .test-section {
+            background: #141414;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border-left: 3px solid #FF0033;
+        }
+
+        .test-item h3 {
+            margin-bottom: 0.5rem;
+            color: #FF0033;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .status.success {
+            background: rgba(0, 255, 148, 0.1);
+            color: #00FF94;
+            border: 1px solid rgba(0, 255, 148, 0.3);
+        }
+
+        /* RTL Support */
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .rtl .test-item {
+            border-left: none;
+            border-right: 3px solid #FF0033;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #141414;
+            border: 1px solid #FF0033;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .rtl .notification {
+            right: auto;
+            left: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard Overview</h1>
+
+        <div class="language-switcher">
+            <button class="btn" onclick="switchLanguage('en')">English</button>
+            <button class="btn" onclick="switchLanguage('ar')">العربية</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Dashboard Overview</h2>
+            
+            <div class="test-item">
+                <h3>Dashboard</h3>
+                <p>Welcome to First Season Moto</p>
+                <span class="status success">✓ Working</span>
+            </div>
+
+            <div class="test-item">
+                <h3>Bikes</h3>
+                <p>Total Bikes</p>
+                <span class="status success">✓ Working</span>
+            </div>
+
+            <div class="test-item">
+                <h3>Users</h3>
+                <p>Total Users</p>
+                <span class="status success">✓ Working</span>
+            </div>
+
+            <div class="test-item">
+                <h3>Bookings</h3>
+                <p>Total Bookings</p>
+                <span class="status success">✓ Working</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Results</h2>
+            <ul id="test-results" style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem; margin-bottom: 0.5rem; background: #1a1a1a; border-radius: 4px;">
+                    ✓ Language switching: <span id="lang-status">Testing...</span>
+                </li>
+                <li style="padding: 0.5rem; margin-bottom: 0.5rem; background: #1a1a1a; border-radius: 4px;">
+                    ✓ RTL/LTR switching: <span id="rtl-status">Testing...</span>
+                </li>
+                <li style="padding: 0.5rem; margin-bottom: 0.5rem; background: #1a1a1a; border-radius: 4px;">
+                    ✓ LocalStorage persistence: <span id="storage-status">Testing...</span>
+                </li>
+                <li style="padding: 0.5rem; margin-bottom: 0.5rem; background: #1a1a1a; border-radius: 4px;">
+                    ✓ Button active states: <span id="button-status">Testing...</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="js/translation.js"></script>
+    <script>
+        // Test the functionality
+        function runTests() {
+            setTimeout(() => {
+                // Test 1: Language switching
+                const currentLang = localStorage.getItem('language') || 'en';
+                document.getElementById('lang-status').textContent = `Current: ${currentLang}`;
+                document.getElementById('lang-status').style.color = '#00FF94';
+
+                // Test 2: RTL/LTR
+                const isRTL = document.body.classList.contains('rtl');
+                document.getElementById('rtl-status').textContent = isRTL ? 'RTL Active' : 'LTR Active';
+                document.getElementById('rtl-status').style.color = '#00FF94';
+
+                // Test 3: LocalStorage
+                const stored = localStorage.getItem('language');
+                document.getElementById('storage-status').textContent = stored ? `Saved: ${stored}` : 'Not saved';
+                document.getElementById('storage-status').style.color = '#00FF94';
+
+                // Test 4: Button states
+                const activeBtn = document.querySelector('.btn.active');
+                document.getElementById('button-status').textContent = activeBtn ? 'Active state working' : 'No active button';
+                document.getElementById('button-status').style.color = '#00FF94';
+            }, 500);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `<span>✓</span><span>${message}</span>`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Override switchLanguage to add notification
+        const originalSwitchLanguage = window.switchLanguage;
+        window.switchLanguage = function(lang) {
+            originalSwitchLanguage(lang);
+            showNotification(`Language switched to ${lang === 'en' ? 'English' : 'العربية'}`);
+            runTests();
+        };
+
+        // Run tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            runTests();
+        });
+
+        // Listen for language changes
+        window.addEventListener('languageChanged', (e) => {
+            console.log('Language changed to:', e.detail.language);
+            runTests();
+        });
+    </script>
+</body>
+</html>

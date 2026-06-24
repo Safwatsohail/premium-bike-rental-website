@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Four Season Moto Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <!-- Fast Firebase Init - Prefetch data immediately -->
+    <script src="js/firebase-init.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="Four Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="main_admin.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> <span>Users</span></a></li>
+                    <li><a href="bikes-fixed.html"><i class="fas fa-bicycle"></i> <span>Bikes</span></a></li>
+                    <li><a href="accessories.html"><i class="fas fa-toolbox"></i> <span>Accessories</span></a></li>
+                    <li><a href="bookings.html"><i class="fas fa-calendar-alt"></i> <span>Bookings</span></a></li>
+                    <li><a href="testimonials.html"><i class="fas fa-star"></i> <span>Testimonials</span></a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+                    <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar glass">
+                <div class="page-title-header">
+                    <h1><i class="fas fa-cog"></i> Settings</h1>
+                </div>
+                <div class="user-actions">
+                    <div class="user-profile">
+                        <img src="https://picsum.photos/seed/admin/40/40" alt="Admin">
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="settings-content" style="padding: 20px;">
+                <!-- Delivery & Locations Settings -->
+                <div class="settings-section glass" style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 25px; margin-bottom: 20px;">
+                    <div class="section-header" style="margin-bottom: 25px;">
+                        <h2 style="color: #FF0033; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-truck"></i> Delivery & Locations
+                        </h2>
+                        <p style="color: #888; margin-top: 5px;">Manage delivery service and pickup locations</p>
+                    </div>
+                    
+                    <div class="settings-list">
+                        <!-- Delivery Toggle -->
+                        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px;">
+                            <div class="setting-info">
+                                <label style="color: #fff; font-weight: 600; display: block;">Delivery Service</label>
+                                <p style="color: #888; font-size: 0.9rem; margin-top: 3px;">Enable or disable delivery to customer locations</p>
+                            </div>
+                            <div class="setting-control">
+                                <label class="toggle-switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                                    <input type="checkbox" id="delivery-toggle" style="opacity: 0; width: 0; height: 0;">
+                                    <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 26px;"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Fee -->
+                        <div class="setting-item" id="delivery-fee-item" style="display: none; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px;">
+                            <div class="setting-info">
+                                <label style="color: #fff; font-weight: 600; display: block;">Delivery Fee (AED)</label>
+                                <p style="color: #888; font-size: 0.9rem; margin-top: 3px;">Fee charged for delivery service</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="delivery-fee" style="width: 120px; padding: 10px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 1rem;" placeholder="50" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Manage Locations Button -->
+                        <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 15px;">
+                            <div class="setting-info">
+                                <label style="color: #fff; font-weight: 600; display: block;">Pickup Locations</label>
+                                <p style="color: #888; font-size: 0.9rem; margin-top: 3px;">Manage available pickup/drop-off locations</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn btn-primary" onclick="openLocationsModal()" style="background: #FF0033; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-map-marker-alt"></i> Manage Locations
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Location Count -->
+                        <div class="setting-item" style="padding: 15px; background: rgba(255,0,51,0.1); border-radius: 10px; border: 1px solid rgba(255,0,51,0.3);">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <i class="fas fa-info-circle" style="color: #FF0033; font-size: 1.5rem;"></i>
+                                <div>
+                                    <p style="color: #fff; font-weight: 600;">Active Locations: <span id="activeLocationCount">0</span></p>
+                                    <p style="color: #888; font-size: 0.85rem; margin-top: 3px;">These locations will appear in the booking form for customers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="saveDeliverySettings()" style="background: #FF0033; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Locations Modal -->
+    <div class="modal" id="locationsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: #1a1a1a; border: 1px solid #333; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow: hidden;">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="color: #FF0033; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-map-marker-alt"></i> Manage Locations
+                </h2>
+                <button onclick="closeLocationsModal()" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; overflow-y: auto; max-height: calc(80vh - 140px);">
+                <div class="add-location-form" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="newLocationName" placeholder="Location name (e.g. Dubai Marina)" style="flex: 1; padding: 12px; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 1rem;">
+                    <button onclick="addLocation()" style="background: #FF0033; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+                <div class="locations-list" id="locationsList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Locations will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; z-index: 2000; animation: slideIn 0.3s ease;"></div>
+
+    <style>
+        .toggle-switch input:checked + .slider {
+            background-color: #FF0033;
+        }
+        .toggle-switch .slider:before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        .toggle-switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        .location-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .location-item .location-name {
+            flex: 1;
+            font-weight: 500;
+            color: #fff;
+        }
+        .location-item .location-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-icon.btn-danger {
+            background: rgba(255,0,0,0.2);
+            color: #ff4444;
+        }
+        .btn-icon.btn-danger:hover {
+            background: rgba(255,0,0,0.4);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .page-title-header h1 {
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-title-header h1 i {
+            color: #FF0033;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #FF0033;
+            border: none;
+            color: #fff;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 15px;
+            }
+            .setting-control {
+                width: 100%;
+            }
+            .setting-control input[type="number"] {
+                width: 100% !important;
+            }
+        }
+    </style>
+
+    <script>
+        // Delivery Settings
+        let deliverySettings = {
+            enabled: false,
+            fee: 50,
+            locations: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDeliverySettings();
+            setupMobileMenu();
+            setupToggle();
+        });
+
+        function setupMobileMenu() {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (toggle && sidebar && overlay) {
+                toggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+        }
+
+        function setupToggle() {
+            const toggle = document.getElementById('delivery-toggle');
+            toggle.addEventListener('change', function() {
+                deliverySettings.enabled = this.checked;
+                document.getElementById('delivery-fee-item').style.display = this.checked ? 'flex' : 'none';
+            });
+        }
+
+        async function loadDeliverySettings() {
+            try {
+                if (!window.db) {
+                    setTimeout(loadDeliverySettings, 100);
+                    return;
+                }
+                
+                const doc = await window.db.collection('settings').doc('delivery').get();
+                if (doc.exists) {
+                    deliverySettings = doc.data();
+                } else {
+                    // Set defaults
+                    deliverySettings = {
+                        enabled: false,
+                        fee: 50,
+                        locations: [
+                            { id: '1', name: 'Dubai Marina', enabled: true },
+                            { id: '2', name: 'Palm Jumeirah', enabled: true },
+                            { id: '3', name: 'Downtown Dubai', enabled: true },
+                            { id: '4', name: 'JBR', enabled: true },
+                            { id: '5', name: 'Business Bay', enabled: true },
+                            { id: '6', name: 'Al Barsha', enabled: true },
+                            { id: '7', name: 'Dubai Mall', enabled: true },
+                            { id: '8', name: 'Motor City', enabled: true }
+                        ]
+                    };
+                    // Save defaults
+                    await window.db.collection('settings').doc('delivery').set(deliverySettings);
+                }
+                
+                // Update UI
+                document.getElementById('delivery-toggle').checked = deliverySettings.enabled;
+                document.getElementById('delivery-fee').value = deliverySettings.fee || 50;
+                document.getElementById('delivery-fee-item').style.display = deliverySettings.enabled ? 'flex' : 'none';
+                updateLocationCount();
+                
+            } catch (error) {
+                console.error('Error loading delivery settings:', error);
+                showNotification('Error loading settings', 'error');
+            }
+        }
+
+        async function saveDeliverySettings() {
+            try {
+                if (!window.db) return;
+                
+                deliverySettings.enabled = document.getElementById('delivery-toggle').checked;
+                deliverySettings.fee = parseFloat(document.getElementById('delivery-fee').value) || 50;
+                
+                await window.db.collection('settings').doc('delivery').set(deliverySettings);
+                showNotification('Settings saved successfully!', 'success');
+                updateLocationCount();
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showNotification('Error saving settings', 'error');
+            }
+        }
+
+        function updateLocationCount() {
+            const activeCount = (deliverySettings.locations || []).filter(l => l.enabled).length;
+            document.getElementById('activeLocationCount').textContent = activeCount;
+        }
+
+        function openLocationsModal() {
+            document.getElementById('locationsModal').style.display = 'flex';
+            renderLocations();
+        }
+
+        function closeLocationsModal() {
+            document.getElementById('locationsModal').style.display = 'none';
+        }
+
+        function renderLocations() {
+            const container = document.getElementById('locationsList');
+            container.innerHTML = '';
+            
+            if (!deliverySettings.locations || deliverySettings.locations.length === 0) {
+                container.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">No locations added yet</p>';
+                return;
+            }
+            
+            deliverySettings.locations.forEach(location => {
+                const div = document.createElement('div');
+                div.className = 'location-item';
+                div.innerHTML = `
+                    <span class="location-name">${location.name}</span>
+                    <div class="location-actions">
+                        <label class="toggle-switch" style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                            <input type="checkbox" ${location.enabled ? 'checked' : ''} onchange="toggleLocation('${location.id}')" style="opacity: 0; width: 0; height: 0;">
+                            <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: ${location.enabled ? '#FF0033' : '#333'}; transition: .3s; border-radius: 24px;"></span>
+                        </label>
+                        <button class="btn-icon btn-danger" onclick="deleteLocation('${location.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function addLocation() {
+            const input = document.getElementById('newLocationName');
+            const name = input.value.trim();
+            
+            if (!name) {
+                showNotification('Please enter a location name', 'error');
+                return;
+            }
+            
+            const newLocation = {
+                id: Date.now().toString(),
+                name: name,
+                enabled: true
+            };
+            
+            if (!deliverySettings.locations) {
+                deliverySettings.locations = [];
+            }
+            
+            deliverySettings.locations.push(newLocation);
+            await saveDeliverySettings();
+            
+            input.value = '';
+            renderLocations();
+            showNotification('Location added!', 'success');
+        }
+
+        async function toggleLocation(id) {
+            const location = deliverySettings.locations.find(l => l.id === id);
+            if (location) {
+                location.enabled = !location.enabled;
+                await saveDeliverySettings();
+                renderLocations();
+            }
+        }
+
+        async function deleteLocation(id) {
+            deliverySettings.locations = deliverySettings.locations.filter(l => l.id !== id);
+            await saveDeliverySettings();
+            renderLocations();
+            showNotification('Location deleted', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.background = type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3';
+            notification.style.color = '#fff';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('locationsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLocationsModal();
+            }
+        });
+    </script>
+</body>
+</html>

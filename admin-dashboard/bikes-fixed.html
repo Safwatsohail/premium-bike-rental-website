@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Management - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bikes.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+</head>
+<body data-page-title="bikes.title">
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="First Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="main_admin.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="bikes.html" class="active"><i class="fas fa-bicycle"></i> <span>Bikes</span></a></li>
+                    <li><a href="users.html"><i class="fas fa-users"></i> <span>Users</span></a></li>
+                    <li><a href="bookings.html"><i class="fas fa-calendar-alt"></i> <span>Bookings</span></a></li>
+                    <li><a href="testimonials.html"><i class="fas fa-star"></i> <span>Testimonials</span></a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1><i class="fas fa-bicycle"></i> <span>Bike Management</span></h1>
+                <button class="btn btn-primary" id="addNewBike">
+                    <i class="fas fa-plus"></i> <span>Add New Bike</span>
+                </button>
+            </header>
+
+            <!-- Search and Filters -->
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchBikes" placeholder="Search bikes by name, model, type...">
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="btn btn-outline active" data-filter="all">All</button>
+                        <button class="btn btn-outline" data-filter="available">Available</button>
+                        <button class="btn btn-outline" data-filter="rented">Rented</button>
+                        <button class="btn btn-outline" data-filter="maintenance">Maintenance</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bikes Grid -->
+            <section class="bikes-section">
+                <div class="bikes-container" id="bikesContainer">
+                    <!-- Bikes will be loaded here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bike Modal -->
+    <div class="modal" id="bikeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Bike</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bikeForm">
+                    <input type="hidden" id="bikeId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bikeName">Bike Name</label>
+                            <input type="text" id="bikeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bikeModel">Model</label>
+                            <input type="text" id="bikeModel" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bikeType">Type</label>
+                            <select id="bikeType" required>
+                                <option value="">Select Type</option>
+                                <option value="mountain">Mountain</option>
+                                <option value="road">Road</option>
+                                <option value="electric">Electric</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="city">City</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bikeYear">Year</label>
+                            <input type="number" id="bikeYear" min="2020" max="2025" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bikePrice">Price per Day (AED)</label>
+                            <input type="number" id="bikePrice" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bikeStatus">Status</label>
+                            <select id="bikeStatus" required>
+                                <option value="available">Available</option>
+                                <option value="rented">Rented</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bikeFeatures">Features (comma separated)</label>
+                        <input type="text" id="bikeFeatures" placeholder="21 Gears, Disc Brakes, Aluminum Frame">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bikeDescription">Description</label>
+                        <textarea id="bikeDescription" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bikeImage">Bike Image</label>
+                        <input type="file" id="bikeImage" accept="image/*">
+                        <div class="image-preview">
+                            <img id="imagePreview" src="https://via.placeholder.com/300x200?text=Upload+Image" alt="Bike Image">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBike">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Bike</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Initialize Firebase directly in this page
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.firebasestorage.app",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "1:YOUR_MESSAGING_SENDER_ID:web:27d28d44e449306b726b97",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        // Make available globally
+        window.db = db;
+        window.auth = auth;
+        window.storage = storage;
+
+        console.log('✅ Firebase initialized successfully');
+        console.log('📊 Database:', db);
+
+        // Bike Management Script
+        let bikes = [];
+        let unsubscribe = null;
+
+        // DOM Elements
+        const bikesContainer = document.getElementById('bikesContainer');
+        const addBikeBtn = document.getElementById('addNewBike');
+        const bikeForm = document.getElementById('bikeForm');
+        const bikeModal = document.getElementById('bikeModal');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const cancelBtn = document.getElementById('cancelBike');
+        const searchInput = document.getElementById('searchBikes');
+
+        // Form Elements
+        const bikeIdInput = document.getElementById('bikeId');
+        const bikeNameInput = document.getElementById('bikeName');
+        const bikeModelInput = document.getElementById('bikeModel');
+        const bikeTypeSelect = document.getElementById('bikeType');
+        const bikeYearInput = document.getElementById('bikeYear');
+        const bikePriceInput = document.getElementById('bikePrice');
+        const bikeStatusSelect = document.getElementById('bikeStatus');
+        const bikeFeaturesInput = document.getElementById('bikeFeatures');
+        const bikeDescriptionInput = document.getElementById('bikeDescription');
+        const bikeImageInput = document.getElementById('bikeImage');
+        const imagePreview = document.getElementById('imagePreview');
+
+        // State
+        let isEditMode = false;
+        let currentBikeId = null;
+
+        // Initialize Firebase and load bikes
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Loading bikes page...');
+            
+            if (db) {
+                await initializeBikes();
+            } else {
+                console.error('❌ Firebase not initialized');
+                bikesContainer.innerHTML = '<div class="error">Firebase not initialized. Please refresh the page.</div>';
+            }
+            
+            setupEventListeners();
+        });
+
+        // Initialize bikes from Firebase
+        async function initializeBikes() {
+            try {
+                console.log('📥 Loading bikes from Firebase...');
+                bikesContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bikes...</div>';
+                
+                // Set up real-time listener
+                unsubscribe = db.collection('bikes').onSnapshot((snapshot) => {
+                    console.log('🔄 Real-time update received');
+                    bikes = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    console.log(`📊 Found ${bikes.length} bikes`);
+                    renderBikes();
+                });
+                
+                // Also get initial data
+                const snapshot = await db.collection('bikes').get();
+                bikes = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                console.log(`📊 Initial load: ${bikes.length} bikes`);
+                renderBikes();
+                
+            } catch (error) {
+                console.error('❌ Error initializing bikes:', error);
+                bikesContainer.innerHTML = `<div class="error">Error loading bikes: ${error.message}</div>`;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add Bike Button
+            addBikeBtn.addEventListener('click', openAddBikeModal);
+            
+            // Form Submission
+            bikeForm.addEventListener('submit', handleFormSubmit);
+            
+            // Close Modal Buttons
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', closeAllModals);
+            });
+            
+            // Cancel Button
+            cancelBtn.addEventListener('click', closeAllModals);
+            
+            // Search Functionality
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Image Upload Preview
+            bikeImageInput.addEventListener('change', handleImageUpload);
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === bikeModal) {
+                    closeAllModals();
+                }
+            });
+        }
+
+        // Render Bikes
+        function renderBikes(bikesToRender = bikes) {
+            bikesContainer.innerHTML = '';
+            
+            if (bikesToRender.length === 0) {
+                bikesContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-bicycle"></i>
+                        <p>No bikes found</p>
+                        <button class="btn btn-primary" onclick="openAddBikeModal()">Add Your First Bike</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            bikesToRender.forEach(bike => {
+                const bikeCard = createBikeCard(bike);
+                bikesContainer.appendChild(bikeCard);
+            });
+        }
+
+        // Create bike card element
+        function createBikeCard(bike) {
+            const bikeCard = document.createElement('div');
+            bikeCard.className = 'bike-card glass';
+            bikeCard.innerHTML = `
+                <img src="${bike.image || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${bike.name}" class="bike-image">
+                <span class="bike-status status-${bike.status}">${bike.status}</span>
+                <div class="bike-details">
+                    <div class="bike-header">
+                        <div class="bike-title">
+                            <h3>${bike.name}</h3>
+                            <p class="bike-model">${bike.model} • ${bike.type.charAt(0).toUpperCase() + bike.type.slice(1)}</p>
+                        </div>
+                        <div class="bike-price">AED ${bike.price}<span>/day</span></div>
+                    </div>
+                    <div class="bike-meta">
+                        <span>${bike.year}</span>
+                        ${(bike.features || []).map(feature => `<span>${feature}</span>`).join('')}
+                    </div>
+                    <p class="bike-description">${bike.description || 'No description available'}</p>
+                    <div class="bike-actions">
+                        <button class="btn btn-edit" data-id="${bike.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-delete" data-id="${bike.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners
+            bikeCard.querySelector('.btn-edit').addEventListener('click', () => openEditBikeModal(bike.id));
+            const deleteBtn = bikeCard.querySelector('.btn-delete');
+            deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Delete button clicked for bike:', bike.id);
+                window.deleteBike(bike.id);
+            });
+            
+            return bikeCard;
+        }
+
+        // Open Add Bike Modal
+        function openAddBikeModal() {
+            isEditMode = false;
+            currentBikeId = null;
+            bikeForm.reset();
+            imagePreview.src = 'https://via.placeholder.com/300x200?text=Upload+Image';
+            document.getElementById('modalTitle').textContent = 'Add New Bike';
+            bikeModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Open Edit Bike Modal
+        async function openEditBikeModal(id) {
+            try {
+                const bike = bikes.find(b => b.id === id);
+                if (!bike) return;
+                
+                isEditMode = true;
+                currentBikeId = id;
+                
+                // Fill form with bike data
+                bikeIdInput.value = bike.id;
+                bikeNameInput.value = bike.name;
+                bikeModelInput.value = bike.model;
+                bikeTypeSelect.value = bike.type;
+                bikeYearInput.value = bike.year;
+                bikePriceInput.value = bike.price;
+                bikeStatusSelect.value = bike.status;
+                bikeFeaturesInput.value = (bike.features || []).join(', ');
+                bikeDescriptionInput.value = bike.description || '';
+                imagePreview.src = bike.image || 'https://via.placeholder.com/300x200?text=No+Image';
+                
+                document.getElementById('modalTitle').textContent = 'Edit Bike';
+                bikeModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+            } catch (error) {
+                console.error('Error opening edit modal:', error);
+                showNotification('Error loading bike data', 'error');
+            }
+        }
+
+        // Handle Form Submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            try {
+                const bikeData = {
+                    name: bikeNameInput.value.trim(),
+                    model: bikeModelInput.value.trim(),
+                    type: bikeTypeSelect.value,
+                    year: parseInt(bikeYearInput.value),
+                    price: parseFloat(bikePriceInput.value),
+                    status: bikeStatusSelect.value,
+                    features: bikeFeaturesInput.value.split(',').map(f => f.trim()).filter(f => f !== ''),
+                    description: bikeDescriptionInput.value.trim(),
+                    image: imagePreview.src,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (isEditMode) {
+                    // Update existing bike
+                    await db.collection('bikes').doc(currentBikeId).update(bikeData);
+                    showNotification('Bike updated successfully!', 'success');
+                } else {
+                    // Add new bike
+                    bikeData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    const docRef = await db.collection('bikes').add(bikeData);
+                    showNotification('Bike added successfully!', 'success');
+                }
+                
+                closeAllModals();
+                
+            } catch (error) {
+                console.error('Error saving bike:', error);
+                showNotification('Error saving bike: ' + error.message, 'error');
+            }
+        }
+
+        // Handle Image Upload
+        async function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            console.log('Image uploaded - preview updated');
+        }
+
+        // Delete Bike directly
+        window.deleteBike = async function(id) {
+            console.log('🗑️ Attempting to delete bike:', id);
+            alert('Deleting bike: ' + id); // Debug alert
+            
+            if (!id) {
+                console.error('❌ No bike ID provided');
+                showNotification('Error: No bike ID', 'error');
+                return;
+            }
+            
+            const database = db || window.db;
+            if (!database) {
+                console.error('❌ Database not initialized');
+                showNotification('Error: Database not connected', 'error');
+                return;
+            }
+            
+            try {
+                // Show deleting state
+                showNotification('Deleting bike...', 'info');
+                
+                // Delete from Firebase
+                console.log('📤 Sending delete request to Firebase...');
+                await database.collection('bikes').doc(id).delete();
+                console.log('✅ Bike deleted from Firebase:', id);
+                
+                // Also remove from local array immediately for instant UI update
+                bikes = bikes.filter(b => b.id !== id);
+                renderBikes();
+                
+                showNotification('Bike deleted successfully!', 'success');
+            } catch (error) {
+                console.error('❌ Error deleting bike:', error);
+                alert('Delete error: ' + error.message); // Debug alert
+                showNotification('Error deleting bike: ' + error.message, 'error');
+            }
+        }
+
+        // Handle Search
+        async function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (!searchTerm) {
+                renderBikes(bikes);
+                return;
+            }
+            
+            try {
+                // Client-side filtering for now
+                const filteredBikes = bikes.filter(bike => 
+                    bike.name.toLowerCase().includes(searchTerm) ||
+                    bike.model.toLowerCase().includes(searchTerm) ||
+                    bike.type.toLowerCase().includes(searchTerm) ||
+                    (bike.features || []).some(feature => feature.toLowerCase().includes(searchTerm))
+                );
+                renderBikes(filteredBikes);
+            } catch (error) {
+                console.error('Error searching bikes:', error);
+                renderBikes(bikes);
+            }
+        }
+
+        // Close All Modals
+        function closeAllModals() {
+            bikeModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+
+        // Initialize translation system
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.translationManager) {
+                await window.translationManager.init();
+            }
+        });
+    </script>
+    
+    <script src="js/translation.js"></script>
+</body>
+</html>

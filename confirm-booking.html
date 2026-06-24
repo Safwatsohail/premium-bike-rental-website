@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - Four Season Moto</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Your booking is confirmed! Thank you for choosing Four Season Moto for your off-road adventure in Dubai.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <meta name="theme-color" content="#FF0033">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="js/mobile-performance.js"></script>
+    <script src="js/mobile-buttery-smooth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000 0%, #1a0000 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+
+        .status-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .error {
+            color: #FF0033;
+        }
+
+        .loading {
+            color: #FFD700;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .details-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            color: #888;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #FF0033;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: #cc0029;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 51, 0.3);
+        }
+
+        .whatsapp-btn {
+            background: #25D366 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .whatsapp-btn:hover {
+            background: #1da851 !important;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-btn i {
+            font-size: 1.4rem;
+        }
+
+        .secondary-btn {
+            background: #333 !important;
+        }
+
+        .secondary-btn:hover {
+            background: #444 !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fa-spinner {
+            animation: spin 1.5s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="content">
+        <div class="icon-wrapper loading">
+            <i class="fas fa-spinner status-icon"></i>
+        </div>
+        <h1>Processing...</h1>
+        <p>Please wait while we verify your booking details.</p>
+    </div>
+
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const email = urlParams.get('email');
+            const amount = urlParams.get('amount');
+
+            const contentDiv = document.getElementById('content');
+
+            if (!token || !email) {
+                showError('Invalid booking link. Please contact support.');
+                return;
+            }
+
+            try {
+                // Initialize Firebase if not already done in config
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                const db = firebase.firestore();
+
+                // Retrieve temporary booking data if available locally
+                const localBookingData = JSON.parse(localStorage.getItem('bookingConfirmation') || '{}');
+
+                // Show success immediately with local data while Firebase saves in background
+                const bookingId = token || 'BK-' + Date.now();
+
+                showSuccess({
+                    id: bookingId,
+                    email: email,
+                    amount: amount,
+                    bikeName: localBookingData.bikeName || null,
+                    bikePrice: localBookingData.bikePrice || null,
+                    accessories: localBookingData.accessories || []
+                });
+
+                // Save to Firebase in background (non-blocking)
+                db.collection('bookings').doc(bookingId).set({
+                    id: bookingId,
+                    token: token,
+                    email: email,
+                    amount: parseFloat(amount) || 0,
+                    status: 'confirmed',
+                    paymentStatus: 'paid',
+                    customerName: localBookingData.customerName || 'Guest User',
+                    bikeName: localBookingData.bikeName || 'Unknown Bike',
+                    bikePrice: localBookingData.bikePrice || 0,
+                    accessories: localBookingData.accessories || [],
+                    accessoriesTotal: localBookingData.accessoriesTotal || 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    ...localBookingData
+                }).then(() => {
+                    console.log('✅ Booking saved to Firebase');
+                }).catch(err => {
+                    console.warn('⚠️ Firebase save error (booking still confirmed):', err);
+                });
+
+                // Clear local storage cart/booking flow data
+                localStorage.removeItem('selectedBike');
+                localStorage.removeItem('motoAccessories');
+                localStorage.removeItem('accessoriesCart');
+                localStorage.removeItem('bookingConfirmation');
+
+            } catch (error) {
+                console.error('Confirmation error:', error);
+                showError('Failed to confirm booking. Please try again or contact support.');
+            }
+        });
+
+        function showSuccess(data) {
+            const contentDiv = document.getElementById('content');
+
+            // Get rental days from local storage or data
+            const localBookingData = JSON.parse(localStorage.getItem('bookingConfirmation') || '{}');
+            const rentalDays = data.rentalDays || localBookingData.rentalDays || 1;
+
+            // Build accessories HTML if available
+            let accessoriesHtml = '';
+            let accessoriesTotal = 0;
+            if (data.accessories && data.accessories.length > 0) {
+                accessoriesHtml = '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">';
+                accessoriesHtml += `<div style="color: #888; margin-bottom: 10px; font-size: 0.9rem;">Accessories (${rentalDays} day${rentalDays > 1 ? 's' : ''}):</div>`;
+                data.accessories.forEach(acc => {
+                    // Use totalPrice if available, otherwise calculate
+                    const itemTotal = acc.totalPrice || (acc.price * acc.quantity * rentalDays);
+                    accessoriesTotal += itemTotal;
+                    accessoriesHtml += `
+                        <div class="detail-row" style="font-size: 0.9rem;">
+                            <span class="detail-label">${acc.name} × ${acc.quantity}</span>
+                            <span class="detail-value">AED ${itemTotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+                accessoriesHtml += '</div>';
+            }
+
+            // Build bike info HTML with rental days
+            let bikeHtml = '';
+            if (data.bikeName && data.bikeName !== 'Unknown Bike') {
+                const bikePricePerDay = data.bikePricePerDay || data.bikePrice || 0;
+                const bikeTotalPrice = data.bikeTotalPrice || (bikePricePerDay * rentalDays);
+
+                bikeHtml = `
+                    <div class="detail-row">
+                        <span class="detail-label">Bike:</span>
+                        <span class="detail-value">${data.bikeName}</span>
+                    </div>
+                `;
+                if (bikePricePerDay > 0) {
+                    bikeHtml += `
+                        <div class="detail-row">
+                            <span class="detail-label">Rental Duration:</span>
+                            <span class="detail-value">${rentalDays} day${rentalDays > 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="detail-row" style="background: rgba(255,0,51,0.05); padding: 8px; border-radius: 5px;">
+                            <span class="detail-label" style="font-weight: bold; color: #FF0033;">Bike Total:</span>
+                            <span class="detail-value" style="font-weight: bold; color: #FF0033; font-size: 1.1rem;">AED ${parseFloat(bikeTotalPrice).toFixed(2)}</span>
+                        </div>
+                        <div class="detail-row" style="font-size: 0.85rem; color: #666;">
+                            <span class="detail-label">Per Day Rate:</span>
+                            <span class="detail-value">AED ${parseFloat(bikePricePerDay).toFixed(2)}/day</span>
+                        </div>
+                    `;
+                } else {
+                    // Fallback when no pricing data is available
+                    bikeHtml += `
+                        <div class="detail-row" style="background: rgba(255,193,7,0.1); padding: 8px; border-radius: 5px;">
+                            <span class="detail-label" style="color: #FFC107;">Pricing:</span>
+                            <span class="detail-value" style="color: #FFC107;">Contact us for pricing details</span>
+                        </div>
+                    `;
+                }
+            }
+
+            contentDiv.innerHTML = `
+                <img src="Open folder Model.png" alt="Logo" class="logo">
+                <div class="status-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1>Booking Confirmed!</h1>
+                <p>Thank you! Your payment has been verified and your ride is secured.</p>
+                
+                <div class="details-box">
+                    <div class="detail-row">
+                        <span class="detail-label">Booking Reference:</span>
+                        <span class="detail-value text-break">#${data.id.slice(0, 8).toUpperCase()}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value text-break">${data.email}</span>
+                    </div>
+                    ${bikeHtml}
+                    ${accessoriesHtml}
+                    <div class="detail-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <span class="detail-label" style="font-weight: bold;">Total Amount:</span>
+                        <span class="detail-value" style="color: #FF0033; font-size: 1.2rem;">AED ${parseFloat(data.amount).toFixed(2)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value success">Confirmed</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                    <a href="https://wa.me/971XXXXXXXXX?text=Hi!%20I%20just%20confirmed%20my%20booking%20%23${data.id.slice(0, 8).toUpperCase()}%20and%20would%20like%20to%20complete%20the%20payment.%20Amount:%20AED%20${parseFloat(data.amount).toFixed(2)}" 
+                       target="_blank" 
+                       class="btn whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i>
+                        Pay Now via WhatsApp
+                    </a>
+                    <a href="index.html" class="btn secondary-btn">Return to Home</a>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <img src="Open folder Model.png" alt="Logo" class="logo">
+                <div class="status-icon error">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h1>Confirmation Failed</h1>
+                <p>${message}</p>
+                <a href="index.html" class="btn" style="background-color: #333;">Return to Home</a>
+            `;
+        }
+    </script>
+</body>
+
+</html>

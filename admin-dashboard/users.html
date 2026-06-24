@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - First Season Moto Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/users.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    <!-- Fast Firebase Init - Prefetch data immediately -->
+    <script src="js/firebase-init.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" onclick="closeMobileMenu()"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="First Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="main_admin.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="active"><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="bikes.html"><i class="fas fa-bicycle"></i> Bikes</a></li>
+                    <li><a href="accessories.html"><i class="fas fa-toolbox"></i> <span>Accessories</span></a></li>
+                    <li><a href="bookings.html"><i class="fas fa-calendar-alt"></i> Bookings</a></li>
+                    <li><a href="testimonials.html"><i class="fas fa-star"></i> <span>Testimonials</span></a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar glass">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users..." id="userSearch">
+                </div>
+                <div class="user-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile">
+                        <img src="https://picsum.photos/seed/admin/40/40" alt="Admin">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="users-content">
+                <div class="page-header">
+                    <h1>Users</h1>
+                    <div class="header-actions">
+                        <div class="filter-dropdown">
+                            <select id="statusFilter" class="glass-select" title="Filter by status"
+                               >
+                                <option value="all">All Users</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="new">New</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addNewUser()">
+                            <i class="fas fa-plus"></i> <span>Add User</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportUsers()">
+                            <i class="fas fa-download"></i> <span>Export</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Stats -->
+                <div class="users-stats">
+                    <div class="stat-card glass">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsers">0</h3>
+                            <p>Total Users</p>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> +0%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-icon active">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeUsers">0</h3>
+                            <p>Active Users</p>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> +0%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-icon new">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="newUsers">0</h3>
+                            <p>New Users</p>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> +0%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Grid -->
+                <div class="users-grid" id="usersGrid">
+                    <!-- User cards will be populated by JavaScript -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn btn-secondary" onclick="previousPage()" title="Previous page">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="page-info"><span>Page</span> <span
+                            id="currentPage">1</span> <span>of</span> <span
+                            id="totalPages">5</span></span>
+                    <button class="btn btn-secondary" onclick="nextPage()" title="Next page">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Details Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>User Details</h2>
+                <button class="close-btn" onclick="closeUserModal()" title="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="userModalBody">
+                <!-- User details will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="editUser()">
+                    <i class="fas fa-edit"></i> <span>Edit</span>
+                </button>
+                <button class="btn btn-success" onclick="sendMessage()">
+                    <i class="fas fa-envelope"></i> <span>Send Message</span>
+                </button>
+                <button class="btn btn-secondary" onclick="printUserDetails()">
+                    <i class="fas fa-print"></i> <span>Print</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <script defer src="js/firebase-config.js"></script>
+    <script defer src="js/session-manager.js"></script>
+    <script defer src="js/translation.js"></script>
+    <script defer src="js/users.js"></script>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const overlay = document.querySelector('.mobile-overlay');
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            // Prevent body scroll when menu is open
+            if (sidebar.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+
+            // Change icon
+            const icon = menuToggle.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Close mobile menu
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const overlay = document.querySelector('.mobile-overlay');
+
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+
+            const icon = menuToggle.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.sidebar nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && window.innerWidth <= 768) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+
+</html>

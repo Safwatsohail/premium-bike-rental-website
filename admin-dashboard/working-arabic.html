@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working Arabic Translation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    <link rel="stylesheet" href="css/translation-test.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="Open folder Model.png" alt="First Season Moto" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-home"></i> <span class="nav-text">Dashboard</span></a></li>
+                    <li><a href="#"><i class="fas fa-users"></i> <span class="nav-text">Users</span></a></li>
+                    <li><a href="#"><i class="fas fa-bicycle"></i> <span class="nav-text">Bikes</span></a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> <span class="nav-text">Bookings</span></a></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i> <span class="nav-text">Analytics</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span class="nav-text">Settings</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1 class="page-title">Dashboard Overview</h1>
+                <div class="header-actions">
+                    <div class="language-switcher">
+                        <button onclick="switchToEnglish()" class="btn btn-outline">English</button>
+                        <button onclick="switchToArabic()" class="btn btn-outline">العربية</button>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-bicycle"></i> <span class="manage-bikes">Manage Bikes</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-users">1,234</h3>
+                        <p class="total-users-label">Total Users</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-bicycle"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-bikes">56</h3>
+                        <p class="total-bikes-label">Total Bikes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-bookings">89</h3>
+                        <p class="total-bookings-label">Total Bookings</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="stat-info">
+                        <h3 class="total-revenue">AED 12,345</h3>
+                        <p class="total-revenue-label">Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+                <h2 class="recent-orders-title">Recent Orders</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1234</td>
+                            <td>John Doe</td>
+                            <td>Mountain Bike</td>
+                            <td>AED 50</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td><button class="btn btn-sm">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Message -->
+    <div id="statusMessage" class="status-message"></div>
+
+    <script>
+        // Translation data
+        const translations = {
+            en: {
+                'nav-dashboard': 'Dashboard',
+                'nav-users': 'Users',
+                'nav-bikes': 'Bikes',
+                'nav-bookings': 'Bookings',
+                'nav-analytics': 'Analytics',
+                'nav-settings': 'Settings',
+                'page-title': 'Dashboard Overview',
+                'manage-bikes': 'Manage Bikes',
+                'total-users-label': 'Total Users',
+                'total-bikes-label': 'Total Bikes',
+                'total-bookings-label': 'Total Bookings',
+                'total-revenue-label': 'Total Revenue',
+                'recent-orders-title': 'Recent Orders',
+                'status-active': 'Active',
+                'btn-view': 'View'
+            },
+            ar: {
+                'nav-dashboard': 'لوحة التحكم',
+                'nav-users': 'المستخدمون',
+                'nav-bikes': 'الدراجات',
+                'nav-bookings': 'الحجوزات',
+                'nav-analytics': 'التحليلات',
+                'nav-settings': 'الإعدادات',
+                'page-title': 'نظرة عامة على لوحة التحكم',
+                'manage-bikes': 'إدارة الدراجات',
+                'total-users-label': 'إجمالي المستخدمين',
+                'total-bikes-label': 'إجمالي الدراجات',
+                'total-bookings-label': 'إجمالي الحجوزات',
+                'total-revenue-label': 'إجمالي الإيرادات',
+                'recent-orders-title': 'الأوامر الأخيرة',
+                'status-active': 'نشط',
+                'btn-view': 'عرض'
+            }
+        };
+
+        let currentLang = 'en';
+
+        function switchToEnglish() {
+            currentLang = 'en';
+            document.body.classList.remove('rtl');
+            document.documentElement.dir = 'ltr';
+            document.documentElement.lang = 'en';
+            translateAll();
+            showStatus('Switched to English');
+            saveLanguage('en');
+        }
+
+        function switchToArabic() {
+            currentLang = 'ar';
+            document.body.classList.add('rtl');
+            document.documentElement.dir = 'rtl';
+            document.documentElement.lang = 'ar';
+            translateAll();
+            showStatus('Switched to Arabic');
+            saveLanguage('ar');
+        }
+
+        function translateAll() {
+            // Translate navigation
+            document.querySelectorAll('.nav-text').forEach((element, index) => {
+                const keys = ['nav-dashboard', 'nav-users', 'nav-bikes', 'nav-bookings', 'nav-analytics', 'nav-settings'];
+                element.textContent = translations[currentLang][keys[index]];
+            });
+
+            // Translate main elements
+            document.querySelector('.page-title').textContent = translations[currentLang]['page-title'];
+            document.querySelector('.manage-bikes').textContent = translations[currentLang]['manage-bikes'];
+            document.querySelector('.total-users-label').textContent = translations[currentLang]['total-users-label'];
+            document.querySelector('.total-bikes-label').textContent = translations[currentLang]['total-bikes-label'];
+            document.querySelector('.total-bookings-label').textContent = translations[currentLang]['total-bookings-label'];
+            document.querySelector('.total-revenue-label').textContent = translations[currentLang]['total-revenue-label'];
+            document.querySelector('.recent-orders-title').textContent = translations[currentLang]['recent-orders-title'];
+            
+            // Translate status badges
+            document.querySelectorAll('.status-badge').forEach(element => {
+                if (element.textContent === 'Active') {
+                    element.textContent = translations[currentLang]['status-active'];
+                }
+            });
+
+            // Translate view buttons
+            document.querySelectorAll('.btn-sm').forEach(element => {
+                if (element.textContent === 'View') {
+                    element.textContent = translations[currentLang]['btn-view'];
+                }
+            });
+        }
+
+        function showStatus(message) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function saveLanguage(lang) {
+            localStorage.setItem('language', lang);
+            console.log('Language saved to localStorage:', lang);
+        }
+
+        function loadLanguage() {
+            const saved = localStorage.getItem('language');
+            if (saved) {
+                currentLang = saved;
+                if (saved === 'ar') {
+                    switchToArabic();
+                } else {
+                    switchToEnglish();
+                }
+            } else {
+                translateAll(); // Apply default language
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', loadLanguage);
+
+        // Test function
+        window.testTranslation = function() {
+            console.log('Current language:', currentLang);
+            console.log('Available translations:', Object.keys(translations));
+            console.log('Translation test:', translations[currentLang]['nav-dashboard']);
+        };
+    </script>
+</body>
+</html>

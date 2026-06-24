@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Debug Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .bookings-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .booking-item {
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-item.excluded {
+            border-left-color: #dc3545;
+            opacity: 0.6;
+        }
+
+        .booking-info {
+            flex: 1;
+        }
+
+        .booking-id {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .booking-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .status-confirmed,
+        .status-paid,
+        .status-completed,
+        .status-active {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-pending,
+        .status-cancelled {
+            background: #dc3545;
+            color: white;
+        }
+
+        .booking-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .match {
+            background: #28a745;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .mismatch {
+            background: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>💰 Revenue Debug Tool</h1>
+
+        <div class="card">
+            <button class="btn" id="analyzeBtn" onclick="analyzeRevenue()">
+                🔍 Analyze Revenue
+            </button>
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing bookings...</p>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">📊 Revenue Summary</h2>
+                <div class="summary">
+                    <div class="stat-box">
+                        <h3>Total Bookings</h3>
+                        <div class="value" id="totalBookings">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Paid Bookings</h3>
+                        <div class="value" id="paidBookings">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Expected Revenue</h3>
+                        <div class="value" id="expectedRevenue">AED 0</div>
+                    </div>
+                </div>
+                <div id="matchStatus"></div>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">📋 All Bookings</h2>
+                <div class="bookings-list" id="bookingsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="admin-dashboard/js/firebase-config.js"></script>
+
+    <script>
+        async function analyzeRevenue() {
+            const btn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            btn.disabled = true;
+            loading.style.display = 'block';
+            results.classList.remove('show');
+
+            try {
+                const snapshot = await db.collection('bookings').get();
+
+                let totalBookings = 0;
+                let paidBookings = 0;
+                let totalRevenue = 0;
+                const bookingsList = [];
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    const amount = parseFloat(data.amount || data.totalAmount || 0);
+                    const status = (data.status || 'unknown').toLowerCase();
+                    const statusRaw = data.status || 'MISSING';
+
+                    const isPaid = ['confirmed', 'paid', 'completed', 'active'].includes(status);
+
+                    totalBookings++;
+                    if (isPaid) {
+                        paidBookings++;
+                        totalRevenue += amount;
+                    }
+
+                    bookingsList.push({
+                        id,
+                        amount,
+                        status: statusRaw,
+                        isPaid
+                    });
+                });
+
+                // Update summary
+                document.getElementById('totalBookings').textContent = totalBookings;
+                document.getElementById('paidBookings').textContent = paidBookings;
+                document.getElementById('expectedRevenue').textContent = 'AED ' + totalRevenue.toFixed(2);
+
+                // Show match status
+                const matchStatus = document.getElementById('matchStatus');
+                matchStatus.className = 'match';
+                matchStatus.innerHTML = `✅ All pages should show: <strong>AED ${totalRevenue.toFixed(2)}</strong>`;
+
+                // Render bookings list
+                const bookingsListEl = document.getElementById('bookingsList');
+                bookingsListEl.innerHTML = bookingsList.map(booking => `
+                    <div class="booking-item ${booking.isPaid ? '' : 'excluded'}">
+                        <div class="booking-info">
+                            <span class="booking-id">${booking.id.slice(-8)}</span>
+                            <span class="booking-status status-${booking.status.toLowerCase()}">${booking.status}</span>
+                        </div>
+                        <div class="booking-amount">
+                            ${booking.isPaid ? '✅' : '❌'} AED ${booking.amount.toFixed(2)}
+                        </div>
+                    </div>
+                `).join('');
+
+                results.classList.add('show');
+            } catch (error) {
+                alert('Error: ' + error.message);
+                console.error(error);
+            } finally {
+                loading.style.display = 'none';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
